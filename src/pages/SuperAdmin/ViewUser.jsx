@@ -3,18 +3,27 @@ import React, { useEffect, useState } from "react";
 import { data, useNavigate } from "react-router-dom";
 import { MdOutlineDelete } from "react-icons/md";
 import Swal from "sweetalert2";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUsers } from "../../redux/slice/schoolSlice";
+import Spinner from "../../components/Spinner";
 
 
 export default function ViewUser() {
-    const [users, setUsers] = useState([]);
-  
+      const dispatch = useDispatch();
+  const { users, loading, error } = useSelector((state) => state.school);
 
-    useEffect(() => {
-        fetch(`http://localhost:4000/api/superadmin/totalusers`, { credentials: "include", method: "GET" })
-            .then((res) => res.json())
-            .then((data) => setUsers(data));
-    }, []);
-    console.log("Users:", users);
+  // Fetch users on mount
+  useEffect(() => {
+    dispatch(fetchUsers());
+  }, [dispatch]);
+  
+    if (loading === "loading") {
+      return (
+      <Spinner/>
+      );
+    }
+  
+    if (error) return <p className="text-red-500">{error}</p>;
     return (
         <div className="min-h-screen bg-gray-100 p-6">
             {/* Top Header */}

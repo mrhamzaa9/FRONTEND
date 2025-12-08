@@ -13,12 +13,19 @@ import Schooladmin from "./pages/SchoolAdmin/Schooladmin";
 
 
 import { useSelector } from "react-redux";
+import Spinner from "./components/Spinner";
+
+
 
 export default function App() {
   const { user, loading } = useSelector((state) => state.auth);
   const role = user?.role || localStorage.getItem("role");
 
-  if (loading === "loading") return <p>Loading...</p>;
+ if (loading === "loading") {
+    return (
+   <Spinner/>
+    )
+  }
 
   return (
     <>

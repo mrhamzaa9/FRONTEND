@@ -1,16 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchSchools, fetchUsers } from "../../redux/slice/schoolSlice"; // or schoolSlice if separate
+import Spinner from "../../components/Spinner";
 
 export default function SuperAdminContent() {
-  const [users, setUsers] = useState([]);
+  const dispatch = useDispatch();
+  const { schools, users, loading, error } = useSelector((state) => state.school);
 
+  // Fetch schools and users on mount
   useEffect(() => {
-    fetch(`http://localhost:4000/api/superadmin/`, {
-      credentials: "include",
-      method: "GET",
-    })
-      .then((res) => res.json())
-      .then((data) => setUsers(data));
-  }, []);
+    dispatch(fetchSchools());
+    dispatch(fetchUsers()); 
+  }, [dispatch]);
+
+  if (loading === "loading") {
+    return (
+    <Spinner />
+    );
+  }
+
+  if (error) return <p className="text-red-500">{error}</p>;
 
   return (
     <div className="p-6 bg-gray-100">
@@ -24,12 +33,13 @@ export default function SuperAdminContent() {
         {/* Total Schools */}
         <div className="bg-blue-100 p-6 rounded-xl shadow text-center">
           <h2 className="text-lg font-semibold text-gray-800">Total Schools</h2>
-          <p className="text-4xl font-bold text-blue-700 mt-2">{users.length}</p>
+          <p className="text-4xl font-bold text-blue-700 mt-2">{schools.length}</p>
         </div>
-         {/* Total USER */}
+
+        {/* Total Users */}
         <div className="bg-blue-100 p-6 rounded-xl shadow text-center">
           <h2 className="text-lg font-semibold text-gray-800">Total Users</h2>
-          <p className="text-4xl font-bold text-blue-700 mt-2">9</p>
+          <p className="text-4xl font-bold text-blue-700 mt-2">{users.length}</p>
         </div>
       </div>
 
