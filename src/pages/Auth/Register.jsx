@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useDispatch, useSelector } from "react-redux";
-import { registerUser } from"../../redux/slice/authSlice";
+import { registerUser } from "../../redux/slice/authSlice.js"
 
 export default function Register() {
   const navigate = useNavigate();
@@ -14,7 +14,7 @@ export default function Register() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     reset,
   } = useForm();
 
@@ -23,27 +23,23 @@ export default function Register() {
 
     const result = await dispatch(registerUser(data));
 
-    if (result.type === "auth/registerUser/rejected") {
+    if (registerUser.fulfilled.match(result)) {
+      Swal.fire({
+        icon: "success",
+        title: "Success!",
+        text: "Signup successful!",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+      reset();
+      navigate("/login");
+    } else {
       Swal.fire({
         icon: "error",
         title: "Oops!",
         text: result.payload || "Failed to register",
       });
-      return;
     }
-
-    Swal.fire({
-      icon: "success",
-      title: "Success!",
-      text: "Signup successful!",
-      timer: 1500,
-      showConfirmButton: false,
-    });
-
-    reset();
-    setTimeout(() => {
-      navigate("/login");
-    }, 1500);
   };
 
   return (
@@ -54,88 +50,58 @@ export default function Register() {
       >
         <h2 className="text-2xl font-bold mb-6 text-center">Signup</h2>
 
-        {/* Name */}
-        <div className="mb-4">
-          <input
-            placeholder="Name"
-            {...register("name", { required: "Name is required" })}
-            className="w-full p-3 border border-gray-300 rounded"
-          />
-          {errors.name && (
-            <p className="text-red-500 text-sm">{errors.name.message}</p>
-          )}
-        </div>
+        <input
+          placeholder="Name"
+          {...register("name", { required: "Name is required" })}
+          className="w-full p-3 border rounded mb-4"
+        />
+        {errors.name && <p className="text-red-500 text-sm mb-2">{errors.name.message}</p>}
 
-        {/* Email */}
-        <div className="mb-4">
-          <input
-            placeholder="Email"
-            {...register("email", {
-              required: "Email is required",
-              pattern: {
-                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                message: "Invalid email format",
-              },
-            })}
-            className="w-full p-3 border border-gray-300 rounded"
-          />
-          {errors.email && (
-            <p className="text-red-500 text-sm">{errors.email.message}</p>
-          )}
-        </div>
+        <input
+          placeholder="Email"
+          {...register("email", { required: "Email is required" })}
+          className="w-full p-3 border rounded mb-4"
+        />
+        {errors.email && <p className="text-red-500 text-sm mb-2">{errors.email.message}</p>}
 
-        {/* Password */}
-        <div className="mb-4">
-          <input
-            type="password"
-            placeholder="Password"
-            {...register("password", {
-              required: "Password is required",
-              minLength: {
-                value: 6,
-                message: "Password must be at least 6 characters",
-              },
-            })}
-            className="w-full p-3 border border-gray-300 rounded"
-          />
-          {errors.password && (
-            <p className="text-red-500 text-sm">{errors.password.message}</p>
-          )}
-        </div>
+        <input
+          type="password"
+          placeholder="Password"
+          {...register("password", { required: "Password is required" })}
+          className="w-full p-3 border rounded mb-4"
+        />
+        {errors.password && <p className="text-red-500 text-sm mb-2">{errors.password.message}</p>}
 
-        {/* Role */}
-        <div className="mb-6">
-          <select
-            {...register("role", { required: "Role is required" })}
-            className="w-full p-3 border border-gray-300 rounded"
-          >
-            <option value="">Select Role</option>
-            <option value="schoolAdmin">School Admin</option>
-            <option value="teacher">Teacher</option>
-            <option value="student">Student</option>
-          </select>
-          {errors.role && (
-            <p className="text-red-500 text-sm">{errors.role.message}</p>
-          )}
-        </div>
+        <select
+          {...register("role", { required: "Role is required" })}
+          className="w-full p-3 border rounded mb-4"
+        >
+          <option value="">Select Role</option>
+          <option value="schooladmin">School Admin</option>
+          <option value="teacher">Teacher</option>
+          <option value="student">Student</option>
+        </select>
+        {errors.role && <p className="text-red-500 text-sm mb-2">{errors.role.message}</p>}
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={isSubmitting || loading === "loading"}
           className={`w-full p-2 rounded-2xl text-white ${
-            loading ? "bg-blue-300 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"
+            isSubmitting || loading === "loading"
+              ? "bg-blue-300 cursor-not-allowed"
+              : "bg-blue-500 hover:bg-blue-600"
           }`}
         >
-          {loading ? "Submitting..." : "SUBMIT"}
+          {isSubmitting || loading === "loading" ? "Submitting..." : "SUBMIT"}
         </button>
 
+        {error && <p className="text-red-500 text-center mt-2">{error}</p>}
+
         <div className="text-center mt-4">
-          <Link to="/login" className="text-blue-500">
+          <Link to="/login" className="text-blue-500 hover:underline">
             Already have an account? Login
           </Link>
         </div>
-
-        {error && <p className="text-red-500 text-center mt-2">{error}</p>}
       </form>
     </div>
   );

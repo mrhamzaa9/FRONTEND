@@ -1,16 +1,20 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useAuth } from "../../context/auth";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import { Link, useNavigate,  } from "react-router-dom";
+import { createSchool } from "../../redux/slice/schoolSlice"; // your slice
 
 export default function RegisterSchool() {
-  const navigate = useNavigate()
-  const { user } = useAuth();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user  } = useSelector((state) => state.auth); // get logged-in user
+  const { isSubmitting } = useSelector((state) => state.school); // optional loading state
+
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     reset,
   } = useForm({
     defaultValues: {
@@ -22,25 +26,8 @@ export default function RegisterSchool() {
     try {
       data.createdBy = user?._id;
 
-      const res = await fetch("http://localhost:4000/api/school/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-        credentials: "include",
-      });
+      await dispatch(createSchool(data)).unwrap();
 
-      const result = await res.json();
-        
-        if (!res.ok) {
-      Swal.fire({
-        title: "Server Error!",
-        text: result.message ,
-        icon: "error",
-        confirmButtonColor: "#d33",
-      });
-      return; 
-    }
-      // SUCCESS POPUP
       Swal.fire({
         title: "Success!",
         text: "School created successfully!",
@@ -49,16 +36,14 @@ export default function RegisterSchool() {
       });
 
       reset();
-          setTimeout(() => {
-                navigate("/schooladmin");
-            }, 1500);
-    } catch (err) {
-      console.log(err);
 
-      // ERROR POPUP
+      setTimeout(() => {
+        navigate("/schooladmin");
+      }, 1500);
+    } catch (err) {
       Swal.fire({
         title: "Error!",
-        text: "Something went wrong while creating the school.",
+        text: err || "Something went wrong while creating the school.",
         icon: "error",
         confirmButtonColor: "#d33",
       });
@@ -112,11 +97,8 @@ export default function RegisterSchool() {
           className="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600"
           disabled={isSubmitting}
         >
-        Submit
+          Submit
         </button>
-        <Link to="/schooladmin" className="text-blue-500">
-          Back home
-        </Link>
       </form>
     </div>
   );

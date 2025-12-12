@@ -65,11 +65,12 @@ const authSlice = createSlice({
         state.loading = "loading";
         state.error = null;
       })
-      .addCase(registerUser.fulfilled, (state, action) => {
-        state.loading = "succeeded";
-        state.user = action.payload;
-        localStorage.setItem("user", JSON.stringify(action.payload)); // save to localStorage
-      })
+     .addCase(registerUser.fulfilled, (state, action) => {
+  state.loading = "succeeded";
+  // DO NOT set state.user here
+  // state.user = action.payload;
+  // localStorage.setItem("user", JSON.stringify(action.payload));
+})
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = "failed";
         state.error = action.payload;

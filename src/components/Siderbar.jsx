@@ -15,18 +15,22 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/slice/authSlice";
 
 const drawerWidth = 260;
 
-export default function Sidebar({ role, children }) {
+export default function Sidebar({ children }) {
     const dispatch = useDispatch();
     const isLargeScreen = useMediaQuery("(min-width:1200px)");
     const [mobileOpen, setMobileOpen] = React.useState(false);
 
     const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
     const handleLogout = () => dispatch(logout());
+
+    // Get user from Redux store
+    const user = useSelector((state) => state.auth.user);
+    const role = user?.role?.toLowerCase(); // Make sure role is lowercase
 
     const menu = {
         superadmin: [
@@ -39,7 +43,7 @@ export default function Sidebar({ role, children }) {
         schooladmin: [
             { name: "Dashboard", path: "/schooladmin" },
             { name: "Teachers", path: "/schooladmin/teachers" },
-            { name: "CreateSCHOOL", path: "/create-school" },
+            { name: "Create SCHOOL", path: "/create-school" },
             { name: "Courses", path: "/schooladmin/courses" },
         ],
         teacher: [
@@ -56,9 +60,17 @@ export default function Sidebar({ role, children }) {
     const links = menu[role] || [];
 
     const drawer = (
-        <Box sx={{ width: drawerWidth, p: 2, overflowX: 'hidden', backgroundColor: '#f5f5f5', height: '100%' }}>
+        <Box
+            sx={{
+                width: drawerWidth,
+                p: 2,
+                overflowX: "hidden",
+                backgroundColor: "#f5f5f5",
+                height: "100%",
+            }}
+        >
             <Typography variant="h5" sx={{ mb: 2 }}>
-                {role?.toUpperCase()} Panel
+                {role?.toUpperCase() || "USER"} Panel
             </Typography>
             <List>
                 {links.map((item) => (
@@ -77,7 +89,7 @@ export default function Sidebar({ role, children }) {
                 ))}
             </List>
             <Button
-                onClick={handleLogout} // Redux logout
+                onClick={handleLogout}
                 variant="contained"
                 color="error"
                 fullWidth

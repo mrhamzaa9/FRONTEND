@@ -47,7 +47,7 @@ export const deleteUser = createAsyncThunk(
   "admin/deleteUser",
   async (userId, { rejectWithValue }) => {
     try {
-      await api(`/superadmin/user/delete/${id}`, "DELETE");
+      await api(`/api/superadmin/user/delete/${userId}`, "DELETE");
       return userId;
     } catch (err) {
       return rejectWithValue(err.message);
@@ -58,15 +58,16 @@ export const deleteUser = createAsyncThunk(
 // DELETE SCHOOL
 export const deleteSchool = createAsyncThunk(
   "admin/deleteSchool",
-  async (schoolId, { rejectWithValue }) => {
+  async (id, { rejectWithValue }) => {
     try {
       await api(`/api/superadmin/delete/${id}`, "DELETE");
-      return schoolId;
+      return id;
     } catch (err) {
       return rejectWithValue(err.message);
     }
   }
 );
+
 
 // ----------------------
 // 🔹 Slice
@@ -123,6 +124,9 @@ const schoolSlice = createSlice({
         state.loading = "failed";
         state.error = action.payload;
       })
+     
+    
+      
 
       // DELETE USER
       .addCase(deleteUser.pending, (state) => {
