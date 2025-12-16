@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import Teacher from '../pages/Teacher/Teacher'
 import Sidebar from '../components/Siderbar';
 import { useAuth } from '../context/auth';
+import Notification from '../components/Notification';
 
 function TeacherLayout() {
     const { user } = useAuth();
@@ -17,6 +18,7 @@ function TeacherLayout() {
     </>
     return (
         <>
+          <Notification/>
          <Sidebar role={user?.role}>
             <Routes>
                 {routes}

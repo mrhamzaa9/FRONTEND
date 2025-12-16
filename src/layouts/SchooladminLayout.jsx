@@ -6,6 +6,7 @@ import { useAuth } from '../context/auth';
 import Sidebar from '../components/Siderbar';
 import CourseSchool from '../pages/SchoolAdmin/CourseSchool';
 import TeacherRequests from '../pages/SchoolAdmin/TeacherRequests';
+import Notification from '../components/Notification';
 
 function SchooladminLayout() {
     const { user } = useAuth();
@@ -22,6 +23,7 @@ function SchooladminLayout() {
     </>
     return (
         <>
+        <Notification/>
             <Sidebar role={user?.role}>
             <Routes>
                 {routes}

@@ -32,8 +32,7 @@ export default function Login() {
         timer: 1200,
         showConfirmButton: false,
       });
-console.log("User logged in:", user);
-console.log("Navigating to:", user.role);
+
 
       setTimeout(() => {
         if (user.role === "schooladmin") navigate("/schooladmin");

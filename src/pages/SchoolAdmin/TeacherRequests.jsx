@@ -6,6 +6,7 @@ import {
   processTeacherRequest,
 } from "../../redux/slice/teacherSlice";
 import { fetchSchools } from "../../redux/slice/schoolSlice";
+import Notification from "../../components/Notification";
 
 export default function TeacherRequests() {
   const dispatch = useDispatch();
@@ -35,46 +36,54 @@ useEffect(() => {
   };
 
   // Approve teacher
-  const handleApprove = async (teacherRequest) => {
-    const schoolId = teacherRequest.schoolId;
-    const teacherId = teacherRequest._id;
-    const courses = selectedCourses[teacherId] || [];
+const handleApprove = async (teacherRequest) => {
+  const schoolId = teacherRequest.schoolId;
+  const teacherId = teacherRequest.teacherId; // ✅ FIX
+  const courses = selectedCourses[teacherRequest._id] || [];
 
-    try {
-      await dispatch(
-        processTeacherRequest({ teacherId, approve: true, schoolId, courseIds: courses })
-      ).unwrap();
+  try {
+    await dispatch(
+      processTeacherRequest({
+        teacherId,
+        approve: true,
+        schoolId,
+        courseIds: courses
+      })
+    ).unwrap();
 
-      Swal.fire("Approved!", `${teacherRequest.name} has been approved`, "success");
+    Swal.fire("Approved!", `${teacherRequest.name} approved`, "success");
+    dispatch(fetchTeacherRequests());
+  } catch (err) {
+    Swal.fire("Error", err.message || "Something went wrong", "error");
+  }
+};
 
-      // Refresh pending requests
-      dispatch(fetchTeacherRequests());
-    } catch (err) {
-      Swal.fire("Error", err.message || "Something went wrong", "error");
-    }
-  };
 
   // Reject teacher
   const handleReject = async (teacherRequest) => {
-    const schoolId = teacherRequest.schoolId;
-    const teacherId = teacherRequest._id;
+  const schoolId = teacherRequest.schoolId;
+  const teacherId = teacherRequest.teacherId; // ✅ FIX
 
-    try {
-      await dispatch(
-        processTeacherRequest({ teacherId, approve: false, schoolId, courseIds: [] })
-      ).unwrap();
+  try {
+    await dispatch(
+      processTeacherRequest({
+        teacherId,
+        approve: false,
+        schoolId
+      })
+    ).unwrap();
 
-      Swal.fire("Rejected!", `${teacherRequest.name} has been rejected`, "info");
+    Swal.fire("Rejected!", `${teacherRequest.name} rejected`, "info");
+    dispatch(fetchTeacherRequests());
+  } catch (err) {
+    Swal.fire("Error", err.message || "Something went wrong", "error");
+  }
+};
 
-      // Refresh pending requests
-      dispatch(fetchTeacherRequests());
-    } catch (err) {
-      Swal.fire("Error", err.message || "Something went wrong", "error");
-    }
-  };
 
   return (
     <div>
+      <Notification/>
       <h2 className="text-xl font-bold mb-4">Teacher Requests</h2>
 
       {loading === "loading" && <p>Loading...</p>}

@@ -17,9 +17,14 @@ export const fetchTeacherRequests = createAsyncThunk(
 // Approve/reject teacher
 export const processTeacherRequest = createAsyncThunk(
   "school/processTeacherRequest",
-  async ({ teacherId, approve, courseIds, schoolId }, { rejectWithValue }) => {
+  async ({ teacherId, approve, schoolId, courseIds = [] }, { rejectWithValue }) => {
     try {
-      return await api("/api/school/teacher/approve", "POST", { teacherId, approve, courseIds, schoolId });
+      return await api("/api/school/teacher/approve", "POST", {
+        teacherId,
+        approve,
+        schoolId,
+        courseIds,
+      });
     } catch (err) {
       return rejectWithValue(err.message);
     }
