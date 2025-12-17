@@ -63,13 +63,14 @@ const handleApprove = async (teacherRequest) => {
   const handleReject = async (teacherRequest) => {
   const schoolId = teacherRequest.schoolId;
   const teacherId = teacherRequest.teacherId; // ✅ FIX
-
+const courses = selectedCourses[teacherRequest._id] || [];
   try {
     await dispatch(
       processTeacherRequest({
         teacherId,
         approve: false,
-        schoolId
+        schoolId,
+        courseIds: courses 
       })
     ).unwrap();
 

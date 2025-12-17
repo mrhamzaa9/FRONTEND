@@ -16,7 +16,19 @@ export const fetchUsers = createAsyncThunk(
     }
   }
 );
-
+//Fetch schools with courses
+// =====================
+export const fetchSchoolsWithCourses = createAsyncThunk(
+  "schools/fetchWithCourses",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await api("/api/school/teacher-approve", "GET");
+      return res; // array of schools with courses
+    } catch (err) {
+      return rejectWithValue(err.message || "Failed to fetch schools");
+    }
+  }
+);
 // GET ALL SCHOOLS
 export const fetchSchools = createAsyncThunk(
   "admin/fetchSchools",
@@ -77,6 +89,7 @@ const schoolSlice = createSlice({
   initialState: {
     users: [],
     schools: [],
+    approved: [],
     loading: "idle",
     error: null,
   },
@@ -124,7 +137,21 @@ const schoolSlice = createSlice({
         state.loading = "failed";
         state.error = action.payload;
       })
-     
+     //fetch school with course
+       .addCase(fetchSchoolsWithCourses.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+    .addCase(fetchSchoolsWithCourses.fulfilled, (state, action) => {
+    state.loading = false;
+    // Only store the schools array
+    state.approved = Array.isArray(action.payload.schools) ? action.payload.schools : [];
+})
+
+      .addCase(fetchSchoolsWithCourses.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
     
       
 
