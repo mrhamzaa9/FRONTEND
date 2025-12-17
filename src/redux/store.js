@@ -4,12 +4,14 @@ import schoolReducer from "./slice/schoolSlice";
 import courseReducer from "./slice/courseSlice";
 import teacherReducer from "./slice/teacherSlice";
 import teacherReqReducer from "./slice/teacherReqSlice";
+import notificationReducer from "./slice/notification.Slice"
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     school: schoolReducer,
     course: courseReducer,
     teacher: teacherReducer,
+    notifications: notificationReducer,
     teacherReq: teacherReqReducer,
   },
 });

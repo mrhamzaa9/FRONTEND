@@ -9,6 +9,7 @@ import {
   cancelRequest,
 } from "../../redux/slice/teacherReqSlice";
 import Notification from "../../components/Notification";
+import Notifycenter from "../../components/Notifycenter";
 
 export default function TeacherDashboard() {
   const dispatch = useDispatch();
@@ -66,7 +67,7 @@ export default function TeacherDashboard() {
 
   return (
     <div className="p-6">
-                          <Notification/>
+                         <Notifycenter/>
       <h2 className="text-2xl font-bold mb-5">Teacher Dashboard</h2>
 
       <h3 className="text-xl font-semibold mb-3">Available Schools</h3>

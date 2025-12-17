@@ -40,7 +40,7 @@ export default function Notification() {
     };
 
      const handleTeacherRequestStatus = (data) => {
-      console.log("🔥 NOTIFICATION RECEIVED:", data);
+      console.log(" NOTIFICATION RECEIVED:", data);
 
       Swal.fire({
         icon: data.status === "approved" ? "success" : "error",
