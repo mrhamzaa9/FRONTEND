@@ -10,11 +10,11 @@ export default function SchoolAdminDashboard() {
   );
 
   useEffect(() => {
-  
+
     dispatch(fetchMySchool());
-     
+
   }, [dispatch]);
- console.log(mySchool)
+  console.log(mySchool)
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       {/* Header */}
@@ -42,24 +42,24 @@ export default function SchoolAdminDashboard() {
             {school.name}
           </h3>
 
-    {/* ================= STUDENTS ================= */}
-<div className="mt-6">
-  <h4 className="text-xl font-semibold text-gray-700 mb-3">
-    Students
-  </h4>
+          {/* ================= STUDENTS ================= */}
+          <div className="mt-6">
+            <h4 className="text-xl font-semibold text-gray-700 mb-3">
+              Students
+            </h4>
 
-  {(!school.students || school.students.length === 0) ? (
-    <p className="text-gray-500">No students enrolled yet.</p>
-  ) : (
-    <ul className="list-disc list-inside space-y-1">
-      {school.students.map((student) => (
-        <li key={student._id} className="text-gray-800">
-          {student.name || student.email}
-        </li>
-      ))}
-    </ul>
-  )}
-</div>
+            {(!school.students || school.students.length === 0) ? (
+              <p className="text-gray-500">No students enrolled yet.</p>
+            ) : (
+              <ul className="list-disc list-inside space-y-1">
+                {school.students.map((student) => (
+                  <li key={student._id} className="text-gray-800">
+                    {student.name || student.email}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
 
 
           {/* ================= COURSES ================= */}
