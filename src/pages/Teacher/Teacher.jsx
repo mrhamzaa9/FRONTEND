@@ -7,9 +7,10 @@ import {
   requestToJoinSchool,
   clearMessage,
   cancelRequest,
+  updateRequestStatus, // new action to sync socket updates to Redux
 } from "../../redux/slice/teacherReqSlice";
-import Notification from "../../components/Notification";
 import Notifycenter from "../../components/Notifycenter";
+import { socket } from "../../service/socket";
 
 export default function TeacherDashboard() {
   const dispatch = useDispatch();
@@ -17,6 +18,8 @@ export default function TeacherDashboard() {
     (state) => state.teacherReq
   );
 
+  // ✅ Initialize localRequested once from Redux
+  const [localRequested, setLocalRequested] = useState(requested || {});
   const [selectedCourses, setSelectedCourses] = useState({});
 
   useEffect(() => {
@@ -33,13 +36,54 @@ export default function TeacherDashboard() {
     }
   }, [message, error, dispatch]);
 
+  // Socket listener for teacher request status updates
+  useEffect(() => {
+    const handleTeacherRequestStatus = (data) => {
+      if (!data.schoolId) return;
+
+      // Update local state
+      setLocalRequested((prev) => {
+        const updated = { ...prev };
+
+        if (data.status === "approved" || data.status === "rejected") {
+          if (data.courseIds?.length) {
+            updated[data.schoolId] = updated[data.schoolId]?.filter(
+              (id) => !data.courseIds.includes(id)
+            );
+            if (updated[data.schoolId]?.length === 0) delete updated[data.schoolId];
+          } else {
+            delete updated[data.schoolId];
+          }
+        }
+
+        return updated;
+      });
+
+      // Update Redux state so reload keeps status
+      dispatch(updateRequestStatus(data));
+
+      Swal.fire({
+        icon: data.status === "approved" ? "success" : "error",
+        title: data.status.toUpperCase(),
+        html: `<b>School:</b> ${data.schoolName}<br/><b>Message:</b> ${data.message}`,
+        timer: 5000,
+        timerProgressBar: true,
+      });
+    };
+
+    socket.on("teacher-request-status", handleTeacherRequestStatus);
+
+    return () => {
+      socket.off("teacher-request-status", handleTeacherRequestStatus);
+    };
+  }, [dispatch]);
+
   const isCourseRequested = (schoolId, courseId) =>
-    requested?.[schoolId]?.includes(courseId);
+    localRequested?.[schoolId]?.includes(courseId);
 
   const handleCourseChange = (schoolId, courseId) => {
     setSelectedCourses((prev) => {
       const existing = prev[schoolId] || [];
-
       return {
         ...prev,
         [schoolId]: existing.includes(courseId)
@@ -52,7 +96,7 @@ export default function TeacherDashboard() {
   const handleRequest = (schoolId, courseId) => {
     dispatch(requestToJoinSchool({ schoolId, courseIds: [courseId] }));
 
-    // clear local selection after request
+    // Optional: remove from selection after request
     setSelectedCourses((prev) => ({
       ...prev,
       [schoolId]: prev[schoolId]?.filter((id) => id !== courseId) || [],
@@ -67,7 +111,7 @@ export default function TeacherDashboard() {
 
   return (
     <div className="p-6">
-                         <Notifycenter/>
+      <Notifycenter />
       <h2 className="text-2xl font-bold mb-5">Teacher Dashboard</h2>
 
       <h3 className="text-xl font-semibold mb-3">Available Schools</h3>
@@ -82,32 +126,22 @@ export default function TeacherDashboard() {
               <span className="font-medium text-lg">{school.name}</span>
             </div>
 
-            {/* COURSES */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {school.courses?.map((course) => {
-                const requestedCourse = isCourseRequested(
-                  school._id,
-                  course._id
-                );
-
+                const requestedCourse = isCourseRequested(school._id, course._id);
                 const selectedCourse = selected.includes(course._id);
 
                 return (
-                  
-
                   <div
-                
                     key={course._id}
                     className="flex items-center justify-between border px-4 py-2 rounded shadow hover:shadow-md transition"
                   >
                     <span className="font-medium">{course.name}</span>
 
-                    <div className="flex items-center justify-between  gap-2">
+                    <div className="flex items-center gap-2">
                       {requestedCourse ? (
                         <button
-                          onClick={() =>
-                            handleCancelCourse(school._id, course._id)
-                          }
+                          onClick={() => handleCancelCourse(school._id, course._id)}
                           className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
                         >
                           Delete
@@ -133,6 +167,5 @@ export default function TeacherDashboard() {
         );
       })}
     </div>
-    
   );
 }

@@ -60,45 +60,49 @@ export default function Sidebar({ children }) {
     const links = menu[role] || [];
 
     const drawer = (
-        <Box
-            sx={{
-                width: drawerWidth,
-                p: 2,
-                overflowX: "hidden",
-                backgroundColor: "#f5f5f5",
-                height: "100%",
-            }}
+    <Box
+        sx={{
+            width: drawerWidth,
+            p: 2,
+            overflowX: "hidden",
+            backgroundColor: "#f5f5f5",
+            height: "100%",
+            display: "flex",
+            flexDirection: "column", // Make it column
+        }}
+    >
+        <Typography variant="h5" sx={{ mb: 2 }}>
+            {role?.toUpperCase() || "USER"} Panel
+        </Typography>
+        <List sx={{ flexGrow: 1 }}> {/* Pushes logout down */}
+            {links.map((item) => (
+                <ListItem key={item.path} disablePadding>
+                    <ListItemButton
+                        component={Link}
+                        to={item.path}
+                        sx={{
+                            color: "blue",
+                            "&:hover": { backgroundColor: "#e0f2ff" },
+                        }}
+                    >
+                        <ListItemText primary={item.name} />
+                    </ListItemButton>
+                </ListItem>
+            ))}
+        </List>
+        <Button
+            onClick={handleLogout}
+            variant="contained"
+            color="error"
+            fullWidth
+            sx={{ mt: "auto" }} // This pushes it to the bottom
         >
-            <Typography variant="h5" sx={{ mb: 2 }}>
-                {role?.toUpperCase() || "USER"} Panel
-            </Typography>
-            <List>
-                {links.map((item) => (
-                    <ListItem key={item.path} disablePadding>
-                        <ListItemButton
-                            component={Link}
-                            to={item.path}
-                            sx={{
-                                color: "blue",
-                                "&:hover": { backgroundColor: "#e0f2ff" },
-                            }}
-                        >
-                            <ListItemText primary={item.name} />
-                        </ListItemButton>
-                    </ListItem>
-                ))}
-            </List>
-            <Button
-                onClick={handleLogout}
-                variant="contained"
-                color="error"
-                fullWidth
-                
-            >
-                Logout
-            </Button>
-        </Box>
-    );
+            Logout
+        </Button>
+    </Box>
+);
+
+    
 
     return (
         <Box sx={{ display: "flex" }}>

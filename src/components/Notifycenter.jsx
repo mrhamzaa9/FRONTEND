@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchNotifications,
-  markAsRead
+  markAsReadAsync
 } from "../redux/slice/notification.Slice";
 
 import {
@@ -96,15 +96,20 @@ export default function NotifyCenter() {
                 {new Date(n.createdAt).toLocaleString()}
               </Typography>
 
-              {!n.read && (
-                <Typography
-                  variant="caption"
-                  sx={{ color: "primary.main", cursor: "pointer", display: "block", mt: 0.5 }}
-                  onClick={() => dispatch(markAsRead(n._id))}
-                >
-                  Mark as read
-                </Typography>
-              )}
+             {!n.read && (
+  <Typography
+    variant="caption"
+    sx={{
+      color: "primary.main",
+      cursor: "pointer",
+      display: "block",
+      mt: 0.5
+    }}
+    onClick={() => dispatch(markAsReadAsync(n._id))}
+  >
+    Mark as read
+  </Typography>
+)}
             </Box>
           </MenuItem>
         ))}

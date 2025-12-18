@@ -59,6 +59,7 @@ export default function Notification() {
     // cleanup on unmount
     return () => {
       socket.off("teacher-request-status", notificationHandler);
+      
     };
   }, [user?._id]); // ✅ dependency array ensures effect runs once per user
 

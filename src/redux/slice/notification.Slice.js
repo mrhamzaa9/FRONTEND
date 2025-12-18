@@ -13,12 +13,25 @@ export const fetchNotifications = createAsyncThunk(
     }
   }
 );
+//mark read
+export const markAsReadAsync = createAsyncThunk(
+  "notifications/markAsReadAsync",
+  async (id, { rejectWithValue }) => {
+    try {
+      const res = await api(`/api/school/notifications/read/${id}`, "PUT");
+      return res; // updated notification
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 
 const notificationSlice = createSlice({
   name: "notifications",
   initialState: {
     list: [],
-    unreadCount: 0,
+    unreadCount: 0 ,
     loading: false,
     error: null,
   },
@@ -50,7 +63,15 @@ const notificationSlice = createSlice({
       .addCase(fetchNotifications.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+       .addCase(markAsReadAsync.fulfilled, (state, action) => {
+        const notif = state.list.find(n => n._id === action.payload._id);
+        if (notif && !notif.read) {
+          notif.read = true;
+          state.unreadCount -= 1;
+        }
       });
+      
   },
 });
 

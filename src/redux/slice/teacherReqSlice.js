@@ -114,6 +114,24 @@ const teacherReqSlice = createSlice({
       state.message = null;
       state.error = null;
     },
+    
+    // ✅ New reducer for socket updates
+    updateRequestStatus: (state, action) => {
+      const { schoolId, courseIds, status } = action.payload;
+      if (!schoolId) return;
+
+      if (status === "approved" || status === "rejected") {
+        if (courseIds?.length && state.requested[schoolId]) {
+          state.requested[schoolId] = state.requested[schoolId].filter(
+            (id) => !courseIds.includes(id)
+          );
+          if (state.requested[schoolId]?.length === 0) delete state.requested[schoolId];
+        } else {
+          delete state.requested[schoolId];
+        }
+      }
+    },
+  
   },
   extraReducers: (builder) => {
     builder
@@ -186,5 +204,5 @@ const teacherReqSlice = createSlice({
   },
 });
 
-export const { clearMessage } = teacherReqSlice.actions;
+export const { clearMessage,updateRequestStatus } = teacherReqSlice.actions;
 export default teacherReqSlice.reducer;
