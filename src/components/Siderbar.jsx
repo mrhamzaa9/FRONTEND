@@ -93,6 +93,7 @@ export default function Sidebar({ children }) {
                 variant="contained"
                 color="error"
                 fullWidth
+                
             >
                 Logout
             </Button>

@@ -8,7 +8,7 @@ import { createSchool } from "../../redux/slice/schoolSlice"; // your slice
 export default function RegisterSchool() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user  } = useSelector((state) => state.auth); // get logged-in user
+  const { user } = useSelector((state) => state.auth); // get logged-in user
   const { isSubmitting } = useSelector((state) => state.school); // optional loading state
 
   const {

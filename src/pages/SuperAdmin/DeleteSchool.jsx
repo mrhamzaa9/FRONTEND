@@ -41,7 +41,7 @@ export default function DeleteSchool() {
 
   if (loading === "loading") {
     return (
-    <Spinner />
+      <Spinner />
     );
   }
 

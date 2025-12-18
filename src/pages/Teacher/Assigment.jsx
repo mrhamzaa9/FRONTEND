@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { createAssignment } from "../../redux/slice/assignmentSlice";
 import { fetchSchoolsWithCourses  } from "../../redux/slice/schoolSlice";
+import  Spinner  from "../../components/Spinner";
 
 export default function CreateAssignment() {
   const dispatch = useDispatch();
@@ -46,7 +47,7 @@ export default function CreateAssignment() {
     }
   };
 
-  if (loading) return <p>Loading approved schools...</p>;
+  if (loading) return <Spinner/>;
   if (!schools || schools.length === 0)
     return (
       <p className="text-red-500 text-center mt-10">

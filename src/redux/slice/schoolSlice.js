@@ -79,7 +79,18 @@ export const deleteSchool = createAsyncThunk(
     }
   }
 );
-
+// fetch own school
+export const fetchMySchool = createAsyncThunk(
+  "school/fetchMySchool",
+  async (_, { rejectWithValue }) => {
+    try {
+      // this API uses createdBy = req.user.id (we fixed backend already)
+      return await api("/api/school/my-school", "GET");
+    } catch (err) {
+      return rejectWithValue(err.message || "Failed to fetch my school");
+    }
+  }
+);
 
 // ----------------------
 // 🔹 Slice
@@ -88,11 +99,13 @@ const schoolSlice = createSlice({
   name: "school",
   initialState: {
     users: [],
-    schools: [],
+    schools: [],       // SuperAdmin – all schools
+    mySchool: [],      // SchoolAdmin – only own school
     approved: [],
     loading: "idle",
     error: null,
   },
+
   reducers: {},
   extraReducers: (builder) => {
     builder
@@ -137,23 +150,40 @@ const schoolSlice = createSlice({
         state.loading = "failed";
         state.error = action.payload;
       })
-     //fetch school with course
-       .addCase(fetchSchoolsWithCourses.pending, (state) => {
+      //fetch school with course
+      .addCase(fetchSchoolsWithCourses.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-    .addCase(fetchSchoolsWithCourses.fulfilled, (state, action) => {
-    state.loading = false;
-    // Only store the schools array
-    state.approved = Array.isArray(action.payload.schools) ? action.payload.schools : [];
-})
+      .addCase(fetchSchoolsWithCourses.fulfilled, (state, action) => {
+        state.loading = false;
+        // Only store the schools array
+        state.approved = Array.isArray(action.payload.schools) ? action.payload.schools : [];
+      })
 
       .addCase(fetchSchoolsWithCourses.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-    
-      
+
+      // FETCH MY SCHOOL
+      // =====================
+      .addCase(fetchMySchool.pending, (state) => {
+        state.loading = "loading";
+        state.error = null;
+      })
+      .addCase(fetchMySchool.fulfilled, (state, action) => {
+        state.loading = "succeeded";
+        // API returns array [school]
+        state.mySchool = Array.isArray(action.payload)
+          ? action.payload
+          : [];
+      })
+      .addCase(fetchMySchool.rejected, (state, action) => {
+        state.loading = "failed";
+        state.error = action.payload;
+      })
+
 
       // DELETE USER
       .addCase(deleteUser.pending, (state) => {

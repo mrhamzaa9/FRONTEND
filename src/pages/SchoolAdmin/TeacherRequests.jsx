@@ -20,9 +20,9 @@ export default function TeacherRequests() {
     dispatch(fetchTeacherRequests());
     dispatch(fetchSchools()); // load courses for selection
   }, [dispatch]);
-useEffect(() => {
-  console.log("Teacher requests from Redux:", requests);
-}, [requests]);
+  useEffect(() => {
+    console.log("Teacher requests from Redux:", requests);
+  }, [requests]);
 
   // Handle course checkbox changes
   const handleCourseChange = (teacherId, courseId) => {
@@ -36,55 +36,55 @@ useEffect(() => {
   };
 
   // Approve teacher
-const handleApprove = async (teacherRequest) => {
-  const schoolId = teacherRequest.schoolId;
-  const teacherId = teacherRequest.teacherId; // ✅ FIX
-  const courses = selectedCourses[teacherRequest._id] || [];
+  const handleApprove = async (teacherRequest) => {
+    const schoolId = teacherRequest.schoolId;
+    const teacherId = teacherRequest.teacherId; // ✅ FIX
+    const courses = selectedCourses[teacherRequest._id] || [];
 
-  try {
-    await dispatch(
-      processTeacherRequest({
-        teacherId,
-        approve: true,
-        schoolId,
-        courseIds: courses
-      })
-    ).unwrap();
+    try {
+      await dispatch(
+        processTeacherRequest({
+          teacherId,
+          approve: true,
+          schoolId,
+          courseIds: courses
+        })
+      ).unwrap();
 
-    Swal.fire("Approved!", `${teacherRequest.name} approved`, "success");
-    dispatch(fetchTeacherRequests());
-  } catch (err) {
-    Swal.fire("Error", err.message || "Something went wrong", "error");
-  }
-};
+      Swal.fire("Approved!", `${teacherRequest.name} approved`, "success");
+      dispatch(fetchTeacherRequests());
+    } catch (err) {
+      Swal.fire("Error", err.message || "Something went wrong", "error");
+    }
+  };
 
 
   // Reject teacher
   const handleReject = async (teacherRequest) => {
-  const schoolId = teacherRequest.schoolId;
-  const teacherId = teacherRequest.teacherId; // ✅ FIX
-const courses = selectedCourses[teacherRequest._id] || [];
-  try {
-    await dispatch(
-      processTeacherRequest({
-        teacherId,
-        approve: false,
-        schoolId,
-        courseIds: courses 
-      })
-    ).unwrap();
+    const schoolId = teacherRequest.schoolId;
+    const teacherId = teacherRequest.teacherId;
+    const courses = selectedCourses[teacherRequest._id] || [];
+    try {
+      await dispatch(
+        processTeacherRequest({
+          teacherId,
+          approve: false,
+          schoolId,
+          courseIds: courses
+        })
+      ).unwrap();
 
-    Swal.fire("Rejected!", `${teacherRequest.name} rejected`, "info");
-    dispatch(fetchTeacherRequests());
-  } catch (err) {
-    Swal.fire("Error", err.message || "Something went wrong", "error");
-  }
-};
+      Swal.fire("Rejected!", `${teacherRequest.name} rejected`, "info");
+      dispatch(fetchTeacherRequests());
+    } catch (err) {
+      Swal.fire("Error", err.message || "Something went wrong", "error");
+    }
+  };
 
 
   return (
     <div>
-      <Notification/>
+      <Notification />
       <h2 className="text-xl font-bold mb-4">Teacher Requests</h2>
 
       {loading === "loading" && <p>Loading...</p>}
@@ -98,14 +98,14 @@ const courses = selectedCourses[teacherRequest._id] || [];
 
           <p className="text-sm text-gray-600">School ID: {teacher.schoolId}</p>
 
-        <div className="mb-2">
-  <p>
-    Selected Courses:{" "}
-    {teacher.courseIds?.length > 0
-      ? teacher.courseIds.map((c) => c.name).join(", ")
-      : "No courses submitted"}
-  </p>
-</div>
+          <div className="mb-2">
+            <p>
+              Selected Courses:{" "}
+              {teacher.courseIds?.length > 0
+                ? teacher.courseIds.map((c) => c.name).join(", ")
+                : "No courses submitted"}
+            </p>
+          </div>
 
 
           <button
