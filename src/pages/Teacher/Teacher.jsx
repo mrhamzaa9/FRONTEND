@@ -1,171 +1,124 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import Spinner from "../../components/Spinner";
+import Notifycenter from "../../components/Notifycenter";
+
 import {
   fetchSchools,
-  requestToJoinSchool,
-  clearMessage,
-  cancelRequest,
-  updateRequestStatus, // new action to sync socket updates to Redux
+  fetchApprovedSchools,
+  requestCourse,
+  cancelCourse,
 } from "../../redux/slice/teacherReqSlice";
-import Notifycenter from "../../components/Notifycenter";
-import { socket } from "../../service/socket";
 
 export default function TeacherDashboard() {
   const dispatch = useDispatch();
-  const { schools, loading, requested, message, error } = useSelector(
-    (state) => state.teacherReq
-  );
 
-  // ✅ Initialize localRequested once from Redux
-  const [localRequested, setLocalRequested] = useState(requested || {});
-  const [selectedCourses, setSelectedCourses] = useState({});
+  const {
+    schools,
+    teacherCourses, // ✅ status-based state
+    loading,
+    error,
+  } = useSelector((state) => state.teacherReq);
 
+  /* ======================
+     LOAD DATA
+  ====================== */
   useEffect(() => {
     dispatch(fetchSchools());
+    dispatch(fetchApprovedSchools());
   }, [dispatch]);
-
+console.log(teacherCourses)
+  /* ======================
+     ERROR HANDLING
+  ====================== */
   useEffect(() => {
-    if (message) {
-      Swal.fire("Info", message, "success");
-      dispatch(clearMessage());
-    }
     if (error) {
       Swal.fire("Error", error, "error");
     }
-  }, [message, error, dispatch]);
+  }, [error]);
 
-  // Socket listener for teacher request status updates
-  useEffect(() => {
-    const handleTeacherRequestStatus = (data) => {
-      if (!data.schoolId) return;
-
-      // Update local state
-      setLocalRequested((prev) => {
-        const updated = { ...prev };
-
-        if (data.status === "approved" || data.status === "rejected") {
-          if (data.courseIds?.length) {
-            updated[data.schoolId] = updated[data.schoolId]?.filter(
-              (id) => !data.courseIds.includes(id)
-            );
-            if (updated[data.schoolId]?.length === 0) delete updated[data.schoolId];
-          } else {
-            delete updated[data.schoolId];
-          }
-        }
-
-        return updated;
-      });
-
-      // Update Redux state so reload keeps status
-      dispatch(updateRequestStatus(data));
-
-      Swal.fire({
-        icon: data.status === "approved" ? "success" : "error",
-        title: data.status.toUpperCase(),
-        html: `<b>School:</b> ${data.schoolName}<br/><b>Message:</b> ${data.message}`,
-        timer: 5000,
-        timerProgressBar: true,
-      });
-    };
-
-    socket.on("teacher-request-status", handleTeacherRequestStatus);
-
-    return () => {
-      socket.off("teacher-request-status", handleTeacherRequestStatus);
-    };
-  }, [dispatch]);
-
-  const isCourseRequested = (schoolId, courseId) =>
-    localRequested?.[schoolId]?.includes(courseId);
-
-  const handleCourseChange = (schoolId, courseId) => {
-    setSelectedCourses((prev) => {
-      const existing = prev[schoolId] || [];
-      return {
-        ...prev,
-        [schoolId]: existing.includes(courseId)
-          ? existing.filter((id) => id !== courseId)
-          : [...existing, courseId],
-      };
-    });
-  };
-
-  const handleRequest = (schoolId, courseId) => {
-    dispatch(requestToJoinSchool({ schoolId, courseIds: [courseId] }));
-
-    // Optional: remove from selection after request
-    setSelectedCourses((prev) => ({
-      ...prev,
-      [schoolId]: prev[schoolId]?.filter((id) => id !== courseId) || [],
-    }));
-  };
-
-  const handleCancelCourse = (schoolId, courseId) => {
-    dispatch(cancelRequest({ schoolId, courseId }));
-  };
-
-  if (loading === "loading") return <Spinner />;
+  if (loading) return <Spinner />;
 
   return (
     <div className="p-6">
       <Notifycenter />
+
       <h2 className="text-2xl font-bold mb-5">Teacher Dashboard</h2>
 
-      <h3 className="text-xl font-semibold mb-3">Available Schools</h3>
       {schools.length === 0 && <p>No schools found.</p>}
 
-      {schools.map((school) => {
-        const selected = selectedCourses[school._id] || [];
+      {schools.map((school) => (
+        <div
+          key={school._id}
+          className="border p-4 rounded mb-4 shadow-sm"
+        >
+          <h3 className="text-lg font-semibold mb-3">
+            {school.name}
+          </h3>
 
-        return (
-          <div key={school._id} className="border p-4 rounded mb-4 shadow-sm">
-            <div className="flex justify-between items-center mb-3">
-              <span className="font-medium text-lg">{school.name}</span>
-            </div>
+          {/* COURSES */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {school.courses?.map((course) => {
+              const status =
+                teacherCourses?.[school._id]?.[course._id];
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {school.courses?.map((course) => {
-                const requestedCourse = isCourseRequested(school._id, course._id);
-                const selectedCourse = selected.includes(course._id);
+              return (
+                <div
+                  key={course._id}
+                  className="flex items-center justify-between border px-4 py-2 rounded shadow"
+                >
+                  <span className="font-medium">{course.name}</span>
 
-                return (
-                  <div
-                    key={course._id}
-                    className="flex items-center justify-between border px-4 py-2 rounded shadow hover:shadow-md transition"
-                  >
-                    <span className="font-medium">{course.name}</span>
+                  {/* ===== BUTTON LOGIC ===== */}
+                  {!status && (
+                    <button
+                      onClick={() =>
+                        dispatch(
+                          requestCourse({
+                            schoolId: school._id,
+                            courseId: course._id,
+                          })
+                        )
+                      }
+                      className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:bg-blue-600"
+                    >
+                      Request
+                    </button>
+                  )}
 
-                    <div className="flex items-center gap-2">
-                      {requestedCourse ? (
-                        <button
-                          onClick={() => handleCancelCourse(school._id, course._id)}
-                          className="px-3 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
-                        >
-                          Delete
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => handleRequest(school._id, course._id)}
-                          className={`px-3 py-1 rounded text-sm ${
-                            selectedCourse
-                              ? "bg-blue-500 text-white hover:bg-blue-600"
-                              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                          }`}
-                        >
-                          {selectedCourse ? "Request" : "Select"}
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                  {status === "pending" && (
+                    <button
+                      onClick={() =>
+                        dispatch(
+                          cancelCourse({
+                            schoolId: school._id,
+                            courseId: course._id,
+                          })
+                        )
+                      }
+                      className="px-3 py-1 bg-yellow-500 text-white rounded text-sm hover:bg-yellow-600"
+                    >
+                      Pending (Cancel)
+                    </button>
+                  )}
+
+                  {status === "approved" && (
+                    <span className="text-green-600 font-semibold">
+                      Approved
+                    </span>
+                  )}
+                    {status === "rejected" && (
+                    <span className="text-green-600 font-semibold">
+                      REjected
+                    </span>
+                  )}
+                </div>
+              );
+            })}
           </div>
-        );
-      })}
+        </div>
+      ))}
     </div>
   );
 }

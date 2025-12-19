@@ -91,6 +91,19 @@ export const fetchMySchool = createAsyncThunk(
     }
   }
 );
+// delete course by admin
+// 🔴 DELETE COURSE
+export const deleteCourse = createAsyncThunk(
+  "school/deleteCourse",
+  async (id, { rejectWithValue }) => {
+    try {
+      await api(`/api/course/${id}`, "DELETE");
+      return id;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
 
 // ----------------------
 // 🔹 Slice
@@ -155,11 +168,13 @@ const schoolSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchSchoolsWithCourses.fulfilled, (state, action) => {
-        state.loading = false;
-        // Only store the schools array
-        state.approved = Array.isArray(action.payload.schools) ? action.payload.schools : [];
-      })
+    .addCase(fetchSchoolsWithCourses.fulfilled, (state, action) => {
+  state.loading = false;
+
+  // backend already returns clean structure
+  state.approved = action.payload.schools || [];
+})
+
 
       .addCase(fetchSchoolsWithCourses.rejected, (state, action) => {
         state.loading = false;
@@ -211,7 +226,17 @@ const schoolSlice = createSlice({
       .addCase(deleteSchool.rejected, (state, action) => {
         state.loading = "failed";
         state.error = action.payload;
-      });
+      })
+      .addCase(deleteCourse.fulfilled, (state, action) => {
+  // remove deleted course from mySchool
+  state.mySchool = state.mySchool.map((school) => ({
+    ...school,
+    courses: school.courses.filter(
+      (course) => course._id !== action.payload
+    ),
+  }));
+});
+
   },
 });
 

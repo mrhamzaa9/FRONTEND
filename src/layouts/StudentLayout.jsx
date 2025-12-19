@@ -3,13 +3,14 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import Student from '../pages/Student/Student'
 import Sidebar from '../components/Siderbar'
 import { useAuth } from '../context/auth';
+import Assignmentstd from '../pages/Student/Assignmentstd';
 
 function StudentLayout() {
     const { user } = useAuth();
   let routes = <>
    
         <Route path='/school' element={<Student/>} />
-    
+        <Route path='/schoolassign' element={<Assignmentstd/>} />
         <Route path='*'
             element={
                 <Navigate to={"/school"} />
