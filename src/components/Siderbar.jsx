@@ -49,6 +49,7 @@ export default function Sidebar({ children }) {
         teacher: [
             { name: "My Courses", path: "/teacher" },
             { name: "Assignments", path: "/teacher/assignments" },
+             { name: "Submission", path: "/teacher/submission" },
         ],
         student: [
             { name: "My School", path: "/student/school" },

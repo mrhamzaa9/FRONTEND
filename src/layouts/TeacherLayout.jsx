@@ -5,6 +5,7 @@ import Sidebar from '../components/Siderbar';
 import { useAuth } from '../context/auth';
 import Notification from '../components/Notification';
 import Assigment from '../pages/Teacher/Assigment';
+import Submission from '../pages/Teacher/Submission';
 
 
 function TeacherLayout() {
@@ -13,6 +14,7 @@ function TeacherLayout() {
    
         <Route path='/teacher' element={<Teacher/>} />
     <Route path='/teacher/assignments' element={<Assigment/>} />
+     <Route path='/teacher/submission' element={<Submission/>} />
         <Route path='*'
             element={
                 <Navigate to={"/teacher"} />

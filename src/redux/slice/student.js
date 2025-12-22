@@ -51,7 +51,7 @@ export const fetchEnrolledCourses = createAsyncThunk(
   "student/fetchEnrolledCourses",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await fetch("/api/entroll/my-course","GET" ,{
+      const res = await fetch("/api/entroll/my-course", "GET", {
         credentials: "include",
       });
       const data = await res.json();
@@ -74,19 +74,29 @@ export const fetchAssignmentsByCourse = createAsyncThunk(
     }
   }
 );
-
-// Submit assignment
+// submission thunk
 export const submitAssignment = createAsyncThunk(
   "student/submitAssignment",
-  async ({ assignmentId, fileUrl }, { rejectWithValue }) => {
+  async (formData, { rejectWithValue }) => {
     try {
-      const res = await api("/api/assign/submit", "POST", { assignmentId, fileUrl });
-      return res.submission;
+      const res = await api.post(
+        "/api/assign/submit",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      return res.data; // { message, submission }
     } catch (err) {
-      return rejectWithValue(err.message);
+      return rejectWithValue(
+        err.response?.data?.message || "Submission failed"
+      );
     }
   }
 );
+
 
 // ===========================
 // Slice
@@ -94,7 +104,7 @@ export const submitAssignment = createAsyncThunk(
 const studentSlice = createSlice({
   name: "student",
   initialState: {
-       enrolledCourses: enrolledCoursesFromStorage, // load from localStorage
+    enrolledCourses: enrolledCoursesFromStorage, // load from localStorage
     selectedSchools: selectedSchoolsFromStorage, // load from localStorage
     loading: "idle",
     error: null,
@@ -168,16 +178,23 @@ const studentSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
+
       .addCase(submitAssignment.fulfilled, (state, action) => {
         state.loading = false;
-        const sub = action.payload;
-        state.submissions[sub.assignmentId] = sub;
-        state.message = "Assignment submitted successfully";
+
+        const { submission, message } = action.payload;
+
+        // mark assignment as submitted
+        state.submissions[submission.assignmentId] = submission;
+
+        state.message = message || "Assignment submitted successfully";
       })
+
       .addCase(submitAssignment.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+    
   },
 });
 
