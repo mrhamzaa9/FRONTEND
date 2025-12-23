@@ -13,6 +13,7 @@ export default function Assignmentstd() {
   const { submissions, loading: submissionLoading, message: submissionMessage, error: submissionError } = useSelector((state) => state.Submissions);
 
   const [files, setFiles] = useState({});
+  
 
   // Fetch assignments and results on mount
   useEffect(() => {
@@ -62,6 +63,7 @@ export default function Assignmentstd() {
 
     dispatch(submitAssignment(formData));
   };
+  console.log(assignments);
 
   if (studentLoading || submissionLoading) return <Spinner />;
 

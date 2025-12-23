@@ -9,6 +9,7 @@ import assignmentReducer from "./slice/assignmentSlice"
 import studentReducer from "./slice/student";
 import studentAssignmentReducer from "./slice/assignmentSlice"
 import SubmissionReducer from "./slice/SubmissionSlice"
+import quizSlice from './slice/quizSlice'
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -21,5 +22,6 @@ export const store = configureStore({
     student: studentReducer,
     assignmentstd: studentAssignmentReducer,
     Submissions: SubmissionReducer,
+    quiz:quizSlice,
   },
 });

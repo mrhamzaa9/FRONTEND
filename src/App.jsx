@@ -10,27 +10,27 @@ import SchooladminLayout from "./layouts/SchooladminLayout";
 import TeacherLayout from "./layouts/TeacherLayout";
 import StudentLayout from "./layouts/StudentLayout";
 import Schooladmin from "./pages/SchoolAdmin/Schooladmin";
-
+import { api } from "./service/api"
 
 import { useSelector } from "react-redux";
 import Spinner from "./components/Spinner";
-
-
+import API from "./components/API";
 
 export default function App() {
   const { user, loading } = useSelector((state) => state.auth);
   const role = user?.role || localStorage.getItem("role");
 
- if (loading === "loading") {
+  if (loading === "loading") {
     return (
-   <Spinner/>
+      <Spinner />
     )
   }
 
   return (
     <>
+    <API />
       {!user ? (
-        <AuthLayout/>
+        <AuthLayout />
       ) : (
         <>
           {role === "superadmin" && (
