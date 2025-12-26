@@ -7,7 +7,6 @@ import  Spinner  from "../../components/Spinner";
 
 export default function CreateAssignment() {
   const dispatch = useDispatch();
-
   const [selectedSchool, setSelectedSchool] = useState("");
   const [selectedCourse, setSelectedCourse] = useState("");
   const [formData, setFormData] = useState({

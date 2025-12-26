@@ -50,6 +50,7 @@ export default function Sidebar({ children }) {
             { name: "My Courses", path: "/teacher" },
             { name: "Assignments", path: "/teacher/assignments" },
              { name: "Submission", path: "/teacher/submission" },
+             { name: "QUIZ", path: "/teacher/quiz" },
         ],
         student: [
             { name: "My School", path: "/student/school" },

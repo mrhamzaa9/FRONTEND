@@ -28,7 +28,7 @@ export default function App() {
 
   return (
     <>
-    <API />
+ 
       {!user ? (
         <AuthLayout />
       ) : (
