@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { api } from "../../service/api";
+
+
 // ===========================
 // Thunks
 // ===========================
@@ -9,94 +11,65 @@ export const enrollCourse = createAsyncThunk(
   "student/enrollCourse",
   async ({ courseId }, { rejectWithValue }) => {
     try {
-      const res = await fetch("/api/enroll", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ courseId }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
+      const data = await api("/api/enroll", "POST", { courseId });
       return { courseId, message: data.message };
     } catch (err) {
       return rejectWithValue(err.message);
     }
   }
 );
-// At the top of your slice file
-const enrolledCoursesFromStorage = JSON.parse(localStorage.getItem("enrolledCourses")) || [];
-const selectedSchoolsFromStorage = JSON.parse(localStorage.getItem("selectedSchools")) || [];
 
 // 2️⃣ Select a school
 export const selectSchool = createAsyncThunk(
   "student/selectSchool",
   async ({ schoolId }, { rejectWithValue }) => {
     try {
-      const res = await fetch("/api/school/select", {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ schoolId }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
+      const data = await api("/api/school/select", "POST", { schoolId });
       return { schoolId, message: data.message };
     } catch (err) {
       return rejectWithValue(err.message);
     }
   }
 );
-//fetch entroll
+
+// 3️⃣ Fetch enrolled courses
 export const fetchEnrolledCourses = createAsyncThunk(
   "student/fetchEnrolledCourses",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await fetch("/api/entroll/my-course", "GET", {
-        credentials: "include",
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
+      const data = await api("/api/entroll/my-course", "GET");
       return data.courses || [];
     } catch (err) {
       return rejectWithValue(err.message);
     }
   }
 );
-// Fetch assignments by course
+
+// 4️⃣ Fetch assignments
 export const fetchAssignmentsByCourse = createAsyncThunk(
   "student/fetchAssignments",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await api("/api/assign/assignments", "GET");
-      return res.assignments;
+      const data = await api("/api/assign/assignments", "GET");
+      return data.assignments || [];
     } catch (err) {
       return rejectWithValue(err.message);
     }
   }
 );
-// submission thunk
+
+// 5️⃣ Submit assignment (supports FormData)
 export const submitAssignment = createAsyncThunk(
   "student/submitAssignment",
   async (formData, { rejectWithValue }) => {
     try {
-      const res = await api.post(
-        "/api/assign/submit",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      return res.data; // { message, submission }
+      const data = await api("/api/assign/submit", "POST", formData, true); // `true` for FormData
+      return data; // { submission, message }
     } catch (err) {
-      return rejectWithValue(
-        err.response?.data?.message || "Submission failed"
-      );
+      return rejectWithValue(err.message || "Submission failed");
     }
   }
 );
-
 
 // ===========================
 // Slice
@@ -104,8 +77,8 @@ export const submitAssignment = createAsyncThunk(
 const studentSlice = createSlice({
   name: "student",
   initialState: {
-    enrolledCourses: enrolledCoursesFromStorage, // load from localStorage
-    selectedSchools: selectedSchoolsFromStorage, // load from localStorage
+    enrolledCourses: [],
+    selectedSchools: [],
     loading: "idle",
     error: null,
     assignments: [],
@@ -120,9 +93,7 @@ const studentSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // ---------------------------
       // Enroll Course
-      // ---------------------------
       .addCase(enrollCourse.pending, (state) => {
         state.loading = "loading";
       })
@@ -131,20 +102,21 @@ const studentSlice = createSlice({
         const { courseId, message } = action.payload;
         if (!state.enrolledCourses.includes(courseId)) {
           state.enrolledCourses.push(courseId);
-          // Save to localStorage
-          localStorage.setItem("enrolledCourses", JSON.stringify(state.enrolledCourses));
+          if (typeof window !== "undefined") {
+            localStorage.setItem(
+              "enrolledCourses",
+              JSON.stringify(state.enrolledCourses)
+            );
+          }
         }
         state.message = message || "Course enrolled successfully";
       })
-
       .addCase(enrollCourse.rejected, (state, action) => {
         state.loading = "failed";
         state.error = action.payload;
       })
 
-      // ---------------------------
       // Select School
-      // ---------------------------
       .addCase(selectSchool.pending, (state) => {
         state.loading = "loading";
       })
@@ -153,7 +125,12 @@ const studentSlice = createSlice({
         const { schoolId, message } = action.payload;
         if (!state.selectedSchools.includes(schoolId)) {
           state.selectedSchools.push(schoolId);
-          localStorage.setItem("selectedSchools", JSON.stringify(state.selectedSchools));
+          if (typeof window !== "undefined") {
+            localStorage.setItem(
+              "selectedSchools",
+              JSON.stringify(state.selectedSchools)
+            );
+          }
         }
         state.message = message || "School selected successfully";
       })
@@ -161,6 +138,8 @@ const studentSlice = createSlice({
         state.loading = "failed";
         state.error = action.payload;
       })
+
+      // Fetch assignments
       .addCase(fetchAssignmentsByCourse.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -173,28 +152,22 @@ const studentSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+
       // Submit assignment
       .addCase(submitAssignment.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-
       .addCase(submitAssignment.fulfilled, (state, action) => {
         state.loading = false;
-
         const { submission, message } = action.payload;
-
-        // mark assignment as submitted
         state.submissions[submission.assignmentId] = submission;
-
         state.message = message || "Assignment submitted successfully";
       })
-
       .addCase(submitAssignment.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      })
-    
+      });
   },
 });
 

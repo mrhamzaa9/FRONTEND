@@ -87,11 +87,10 @@ export default function Login() {
         <button
           type="submit"
           disabled={loading === "loading"}
-          className={`w-full text-white p-3 rounded-2xl transition ${
-            loading === "loading"
+          className={`w-full text-white p-3 rounded-2xl transition ${loading === "loading"
               ? "bg-blue-300 cursor-not-allowed"
               : "bg-blue-500 hover:bg-blue-600"
-          }`}
+            }`}
         >
           {loading === "loading" ? "Logging in..." : "SUBMIT"}
         </button>
@@ -101,6 +100,11 @@ export default function Login() {
           Don’t have an account?
           <Link to="/sign" className="text-blue-500 hover:underline">
             Sign Up
+          </Link>
+        </p>
+        <p className="text-center mt-2">
+          <Link to="/forgot-password" className="text-blue-500 hover:underline">
+            Forgot Password?
           </Link>
         </p>
       </form>

@@ -153,15 +153,19 @@ useEffect(() => {
         {currentQuestion.question}
       </Typography>
 
-      <RadioGroup
-        value={selected}
-        onChange={(e) => handleSelect(currentQuestion.id, e.target.value)}
-      >
-        {currentQuestion.options.map((opt) => (
-          <FormControlLabel key={opt} value={opt} control={<Radio />} label={opt} />
-        ))}
-      </RadioGroup>
-
+   <RadioGroup
+  value={selected}
+  onChange={(e) => handleSelect(currentQuestion.id, e.target.value)}
+>
+  {currentQuestion.options.map((opt) => (
+    <FormControlLabel
+      key={opt}
+      value={opt}      // Send option text, not index
+      control={<Radio />}
+      label={opt}
+    />
+  ))}
+</RadioGroup>
       <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
         <Button
           variant="outlined"

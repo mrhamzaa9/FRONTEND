@@ -1,30 +1,21 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { api } from "../../service/api";
 
-/* ================= FETCH QUIZ ================= */
-// Fetch quiz by ID (teacher-generated) or generate new (optional AI)
+// Fetch quiz by ID or generate new
 export const fetchQuiz = createAsyncThunk(
   "quiz/fetch",
   async ({ quizId, topic, difficulty }, { rejectWithValue }) => {
     try {
       let res;
-
-      if (quizId) {
-        // Fetch an existing teacher-generated quiz
-        res = await api(`/api/quiz/student/${quizId}`, "GET");
-      } else {
-    
-   res = await api(`/api/quiz/student/`, "POST");
-      }
-
-      return res; // { success, quizId, questions }
+      if (quizId) res = await api(`/api/quiz/student/${quizId}`, "GET");
+      else res = await api(`/api/quiz/student/`, "POST", { topic, difficulty });
+      return res;
     } catch (err) {
       return rejectWithValue(err.message);
     }
   }
 );
 
-/* ================= SUBMIT QUIZ ================= */
 export const submitQuiz = createAsyncThunk(
   "quiz/submit",
   async ({ quizId, answers }, { rejectWithValue }) => {
@@ -36,18 +27,17 @@ export const submitQuiz = createAsyncThunk(
   }
 );
 
-/* ================= LIST TEACHER QUIZZES ================= */
 export const fetchTeacherQuizzes = createAsyncThunk(
   "quiz/fetchTeacherQuizzes",
   async (_, { rejectWithValue }) => {
     try {
-      return await api("/api/quiz/list/teacher", "GET"); // returns array of {_id, topic, difficulty, isActive, totalQuestions}
+      return await api("/api/quiz/list/teacher", "GET");
     } catch (err) {
       return rejectWithValue(err.message);
     }
   }
 );
-// view all qiz for students
+
 export const fetchStudentQuizzes = createAsyncThunk(
   "quiz/fetchStudentQuizzes",
   async (_, { rejectWithValue }) => {
@@ -59,8 +49,6 @@ export const fetchStudentQuizzes = createAsyncThunk(
   }
 );
 
-
-/* ================= SLICE ================= */
 const quizSlice = createSlice({
   name: "quiz",
   initialState: {
@@ -70,6 +58,7 @@ const quizSlice = createSlice({
     loading: false,
     error: null,
     teacherQuizzes: [],
+    studentQuizzes: []
   },
   reducers: {
     resetQuiz: (state) => {
@@ -78,65 +67,34 @@ const quizSlice = createSlice({
       state.result = null;
       state.loading = false;
       state.error = null;
-    },
+    }
   },
   extraReducers: (builder) => {
     builder
-      /* FETCH QUIZ */
-      .addCase(fetchQuiz.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
+      // fetchQuiz
+      .addCase(fetchQuiz.pending, (state) => { state.loading = true; state.error = null; })
       .addCase(fetchQuiz.fulfilled, (state, action) => {
         state.loading = false;
         state.questions = action.payload.questions;
         state.quizId = action.payload.quizId;
       })
-      .addCase(fetchQuiz.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
+      .addCase(fetchQuiz.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
 
-      /* SUBMIT QUIZ */
-      .addCase(submitQuiz.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(submitQuiz.fulfilled, (state, action) => {
-        state.loading = false;
-        state.result = action.payload;
-      })
-      .addCase(submitQuiz.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
+      // submitQuiz
+      .addCase(submitQuiz.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(submitQuiz.fulfilled, (state, action) => { state.loading = false; state.result = action.payload; })
+      .addCase(submitQuiz.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
 
-      /* FETCH TEACHER QUIZZES */
-      .addCase(fetchTeacherQuizzes.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchTeacherQuizzes.fulfilled, (state, action) => {
-        state.loading = false;
-        state.teacherQuizzes = action.payload;
-      })
-      .addCase(fetchTeacherQuizzes.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(fetchStudentQuizzes.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchStudentQuizzes.fulfilled, (state, action) => {
-        state.loading = false;
-        state.teacherQuizzes = action.payload;
-      })
-      .addCase(fetchStudentQuizzes.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      });
-  },
+      // teacher quizzes
+      .addCase(fetchTeacherQuizzes.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(fetchTeacherQuizzes.fulfilled, (state, action) => { state.loading = false; state.teacherQuizzes = action.payload; })
+      .addCase(fetchTeacherQuizzes.rejected, (state, action) => { state.loading = false; state.error = action.payload; })
+
+      // student quizzes
+      .addCase(fetchStudentQuizzes.pending, (state) => { state.loading = true; state.error = null; })
+      .addCase(fetchStudentQuizzes.fulfilled, (state, action) => { state.loading = false; state.studentQuizzes = action.payload; })
+      .addCase(fetchStudentQuizzes.rejected, (state, action) => { state.loading = false; state.error = action.payload; });
+  }
 });
 
 export const { resetQuiz } = quizSlice.actions;

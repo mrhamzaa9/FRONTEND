@@ -27,7 +27,7 @@ export const fetchApprovedSchools = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await fetch(
-        "http://localhost:4000/api/school/teacher-approve",
+        "api/school/teacher-approve",
         { credentials: "include" }
       );
       const data = await res.json();
@@ -47,7 +47,7 @@ export const requestCourse = createAsyncThunk(
   async ({ schoolId, courseId }, { rejectWithValue }) => {
     try {
       const res = await fetch(
-        "http://localhost:4000/api/school/teacher/request",
+        "api/school/teacher/request",
         {
           method: "POST",
           credentials: "include",
