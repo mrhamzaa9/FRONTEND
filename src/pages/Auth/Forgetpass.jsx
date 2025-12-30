@@ -17,7 +17,14 @@ export default function Forgetpass() {
 
   useEffect(() => {
     if (success) {
-      Swal.fire("Success", message || "Reset link sent to your email", "success");
+      Swal.fire({
+        title: "Success",
+        text: message || "Password reset link sent to your email",
+      color: "#D97706",
+        background: "#FFFBEB",
+        iconColor: "#D97706", 
+        icon: "success",
+      });
       setEmail("");
     }
     if (error) Swal.fire("Error", error, "error");

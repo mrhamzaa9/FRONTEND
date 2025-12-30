@@ -101,7 +101,7 @@ export default function Submission() {
 
                 <button
                   onClick={() => handleGrade(s._id)}
-                  className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
+                  className="bg-amber-500 text-white px-4 py-1 rounded hover:bg-amber-600"
                 >
                   Submit Grade
                 </button>

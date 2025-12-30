@@ -38,7 +38,7 @@ const Quiztech = () => {
 
   return (
     <Box sx={{ maxWidth: 400, mx: "auto", mt: 4 }}>
-      <Typography variant="h5" sx={{ mb: 2, backgroundColor: "#f5f5f5" }}>Generate Quiz</Typography>
+      <Typography className="text-yellow-500" variant="h5" sx={{ mb: 2,  }}>Generate Quiz</Typography>
 
       <TextField label="Topic" fullWidth margin="normal" value={topic} onChange={(e) => setTopic(e.target.value)} />
       <TextField select label="Difficulty" fullWidth margin="normal" value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
@@ -47,13 +47,13 @@ const Quiztech = () => {
         <MenuItem value="hard">Hard</MenuItem>
       </TextField>
 
-      <Button variant="contained" fullWidth onClick={handleGenerate} disabled={loading} sx={{ mt: 2 }}>
+      <button className="bg-amber-500 p-2 hover:bg-amber-600 w-full text-white rounded-xl" variant="contained" fullWidth onClick={handleGenerate} disabled={loading} sx={{ mt: 2 }}>
         {loading ? <CircularProgress size={24} /> : "Generate Quiz"}
-      </Button>
+      </button>
 
       {teacherQuizzes.length > 0 && (
         <Box sx={{ mt: 4 }}>
-          <Typography variant="h6">Your Quizzes</Typography>
+          <Typography  className="text-yellow-500"variant="h6">Your Quizzes</Typography>
           {teacherQuizzes.map((q) => (
             <Box key={q._id} sx={{ border: "1px solid #ccc", borderRadius: 2, p: 2, mt: 2 }}>
               <Typography><strong>{q.topic}</strong> - {q.difficulty}</Typography>

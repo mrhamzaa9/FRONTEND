@@ -28,6 +28,9 @@ export default function Register() {
         icon: "success",
         title: "Success!",
         text: "Signup successful!",
+        color: "#D97706",
+        background: "#FFFBEB",
+        iconColor: "#D97706", 
         timer: 1500,
         showConfirmButton: false,
       });

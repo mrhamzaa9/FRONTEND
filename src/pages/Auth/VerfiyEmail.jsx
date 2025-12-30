@@ -17,7 +17,9 @@ export default function VerifyEmail() {
 
   useEffect(() => {
     if (success) {
-      Swal.fire({ icon: "success", title: "Email Verified", text: "You can now login", timer: 1500, showConfirmButton: false });
+      Swal.fire({ icon: "success", title: "Email Verified", text: "You can now login", timer: 1500, showConfirmButton: false ,color: "#D97706",
+        background: "#FFFBEB",
+        iconColor: "#D97706",  });
       navigate("/login");
     }
     if (error) Swal.fire({ icon: "error", title: "Verification Failed", text: error });

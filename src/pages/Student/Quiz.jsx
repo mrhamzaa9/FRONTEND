@@ -7,6 +7,7 @@ import {
   resetQuiz,
   fetchStudentQuizzes,
 } from "../../redux/slice/quizSlice";
+import { Spinner } from "react-bootstrap";
 
 export const Quiz = () => {
   const dispatch = useDispatch();
@@ -54,7 +55,7 @@ export const Quiz = () => {
   };
 
   // Loading
-  if (loading) return <div className="text-center mt-8">Loading...</div>;
+  if (loading) return <div className="text-center mt-8"><Spinner /></div>;
 
   // Quiz result
   if (result) {

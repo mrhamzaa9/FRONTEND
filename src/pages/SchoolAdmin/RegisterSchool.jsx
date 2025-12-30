@@ -19,7 +19,9 @@ export default function RegisterSchool() {
     try {
       data.createdBy = user?._id;
       await dispatch(createSchool(data)).unwrap();
-      Swal.fire({ title: "Success!", text: "School created successfully!", icon: "success", confirmButtonColor: "#6B4226" });
+      Swal.fire({ title: "Success!", text: "School created successfully!", icon: "success", confirmButtonColor: "#6B4226",color: "#D97706",
+        background: "#FFFBEB",
+        iconColor: "#D97706",  });
       reset();
       setTimeout(() => navigate("/schooladmin"), 1500);
     } catch (err) {

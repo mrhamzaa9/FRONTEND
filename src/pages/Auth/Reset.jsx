@@ -22,7 +22,14 @@ export default function Reset() {
 
   useEffect(() => {
     if (success) {
-      Swal.fire("Success", message || "Password updated successfully", "success");
+      Swal.fire({
+        title: "Success",
+        text: message || "Password updated successfully",
+        icon: "success",
+        color: "#D97706",
+        background: "#FFFBEB",
+        iconColor: "#D97706"
+      });
       navigate("/login");
     }
     if (error) Swal.fire("Error", error, "error");

@@ -20,7 +20,10 @@ export default function CreateCourse() {
         title: "Success!",
         text: "Course created successfully!",
         icon: "success",
-        confirmButtonColor: "#6B4226", // coffee brown
+        confirmButtonColor: "#6B4226",
+        color: "#D97706",
+        background: "#FFFBEB",
+        iconColor: "#D97706", 
       });
 
       reset();

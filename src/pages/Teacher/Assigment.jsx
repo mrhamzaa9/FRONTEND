@@ -120,7 +120,7 @@ export default function CreateAssignment() {
           className="border px-3 py-2 rounded"
         />
         <button
-          className="bg-blue-500 text-white py-2 rounded"
+          className="bg-amber-500 text-white py-2 rounded"
           disabled={loading}
         >
           {loading ? "Creating..." : "Create Assignment"}

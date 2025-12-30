@@ -1,19 +1,25 @@
-import { Box, CircularProgress } from '@mui/material';
-import React from 'react'
+import { Box, CircularProgress } from "@mui/material";
 
-function Spinner() {
- return (
-      <Box
+export default function Spinner() {
+  return (
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#FFFBEB", // amber-50
+      }}
+    >
+      <CircularProgress
+        size={55}
+        thickness={4.5}
         sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh", // full screen
+          color: "#D97706", // amber-600
+          boxShadow: "0 0 20px rgba(217, 119, 6, 0.25)",
+          borderRadius: "50%",
         }}
-      >
-        <CircularProgress/> {/* MUI spinner */}
-      </Box>
-    );
+      />
+    </Box>
+  );
 }
-
-export default Spinner

@@ -18,7 +18,10 @@ export default function SchoolAdminDashboard() {
       showCancelButton: true,
       confirmButtonColor: "#6B4226",
       cancelButtonColor: "#999",
-      confirmButtonText: "Yes, delete it!"
+      confirmButtonText: "Yes, delete it!",
+      color: "#D97706",
+        background: "#FFFBEB",
+        iconColor: "#D97706", 
     }).then((result) => {
       if (result.isConfirmed) dispatch(deleteCourse(id));
     });
