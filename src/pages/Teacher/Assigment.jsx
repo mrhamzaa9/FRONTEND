@@ -56,7 +56,7 @@ export default function CreateAssignment() {
 
   return (
     <div className="p-6 max-w-md mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Create Assignment</h2>
+      <h2 className="text-2xl  text-amber-600font-bold mb-4">Create Assignment</h2>
 
       {/* SCHOOL SELECT */}
       <select

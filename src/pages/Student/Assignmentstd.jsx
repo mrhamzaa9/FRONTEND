@@ -7,113 +7,79 @@ import { fetchResultAssignments, clearMessage as clearSubmissionMessage } from "
 
 export default function Assignmentstd() {
   const dispatch = useDispatch();
-  
-  // Get state from slices
   const { assignments, loading: studentLoading, message: studentMessage, error: studentError } = useSelector((state) => state.student);
   const { submissions, loading: submissionLoading, message: submissionMessage, error: submissionError } = useSelector((state) => state.Submissions);
-
   const [files, setFiles] = useState({});
-  
 
-  // Fetch assignments and results on mount
   useEffect(() => {
     dispatch(fetchAssignmentsByCourse());
     dispatch(fetchResultAssignments());
   }, [dispatch]);
 
-  // Show messages for student slice
   useEffect(() => {
-    if (studentMessage) {
-      Swal.fire("Success", studentMessage, "success");
-      dispatch(clearStudentMessage());
-    }
-    if (studentError) {
-      Swal.fire("Error", studentError, "error");
-      dispatch(clearStudentMessage());
-    }
+    if (studentMessage) { Swal.fire("Success", studentMessage, "success"); dispatch(clearStudentMessage()); }
+    if (studentError) { Swal.fire("Error", studentError, "error"); dispatch(clearStudentMessage()); }
   }, [studentMessage, studentError, dispatch]);
 
-  // Show messages for submissions slice
   useEffect(() => {
-    if (submissionMessage) {
-      Swal.fire("Success", submissionMessage, "success");
-      dispatch(clearSubmissionMessage());
-    }
-    if (submissionError) {
-      Swal.fire("Error", submissionError, "error");
-      dispatch(clearSubmissionMessage());
-    }
+    if (submissionMessage) { Swal.fire("Success", submissionMessage, "success"); dispatch(clearSubmissionMessage()); }
+    if (submissionError) { Swal.fire("Error", submissionError, "error"); dispatch(clearSubmissionMessage()); }
   }, [submissionMessage, submissionError, dispatch]);
 
-  // Handle file input change
-  const handleFileChange = (assignmentId, file) => {
-    setFiles(prev => ({ ...prev, [assignmentId]: file }));
-  };
-
-  // Submit assignment
+  const handleFileChange = (assignmentId, file) => setFiles(prev => ({ ...prev, [assignmentId]: file }));
   const handleSubmit = (assignmentId) => {
     const file = files[assignmentId];
-    if (!file) {
-      return Swal.fire("Error", "Select a file first", "error");
-    }
-
+    if (!file) return Swal.fire("Error", "Select a file first", "error");
     const formData = new FormData();
     formData.append("assignmentId", assignmentId);
-    formData.append("file", file); // must match backend field
-
+    formData.append("file", file);
     dispatch(submitAssignment(formData));
   };
-  console.log(assignments);
 
   if (studentLoading || submissionLoading) return <Spinner />;
 
   return (
-    <div className="p-6">
-      {/* Assignments Section */}
-      <h2 className="text-2xl font-bold mb-5">Assignments</h2>
-      {assignments.length === 0 && <p>No assignments yet.</p>}
-      <div className="grid gap-4 mb-10">
-        {assignments.map(a => {
-          const submitted = submissions.find(sub => sub.assignmentId._id === a._id);
-          return (
-            <div key={a._id} className="border p-4 rounded shadow flex flex-col gap-2">
-              <span className="font-medium">{a.task}</span>
-              <p className="text-gray-600">{a.description}</p>
-              {submitted ? (
-                <span className="text-green-600 font-semibold">Submitted</span>
-              ) : (
-                <>
-                  <input type="file" onChange={(e) => handleFileChange(a._id, e.target.files[0])} />
-                  <button
-                    onClick={() => handleSubmit(a._id)}
-                    className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-                  >
-                    Submit
-                  </button>
-                </>
-              )}
-            </div>
-          );
-        })}
-      </div>
+    <div className="p-6 bg-gradient-to-br from-amber-50 to-orange-50 min-h-screen">
+      <h2 className="text-3xl font-bold mb-6 text-amber-700">Assignments</h2>
+      {assignments.length === 0 ? <p>No assignments yet.</p> : (
+        <div className="grid gap-4 mb-10">
+          {assignments.map(a => {
+            const submitted = submissions.find(sub => sub.assignmentId._id === a._id);
+            return (
+              <div key={a._id} className="border rounded-2xl p-5 shadow-md flex flex-col gap-3 bg-white hover:shadow-xl transition">
+                <span className="font-semibold text-gray-800">{a.task}</span>
+                <p className="text-gray-600">{a.description}</p>
 
-      {/* Results Section */}
-      <h2 className="text-2xl font-bold mb-5">Assignment Results</h2>
+                {submitted ? (
+                  <span className="text-green-600 font-semibold">Submitted</span>
+                ) : (
+                  <>
+                    <input type="file" onChange={(e) => handleFileChange(a._id, e.target.files[0])} className="border rounded p-1" />
+                    <button
+                      onClick={() => handleSubmit(a._id)}
+                      className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl transition cursor-pointer"
+                    >
+                      Submit
+                    </button>
+                  </>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      <h2 className="text-3xl font-bold mb-6 text-amber-700">Assignment Results</h2>
       <div className="grid gap-4">
-        {Array.isArray(submissions) && submissions
-          .filter(sub => sub.grade) // only graded
-          .map(sub => (
-            <div key={sub._id} className="border p-4 rounded shadow flex flex-col gap-2 bg-gray-50">
-              <span className="font-medium">{sub.assignmentId.task}</span>
-              <p className="text-gray-600">{sub.assignmentId.description}</p>
-              <p className="text-blue-600 font-semibold">Grade: {sub.grade}</p>
-              {sub.feedback && <p className="text-gray-700">Feedback: {sub.feedback}</p>}
-              <a href={sub.fileUrl} target="_blank" rel="noreferrer" className="text-blue-500 underline">
-                View Submitted File
-              </a>
-            </div>
-          ))
-        }
+        {Array.isArray(submissions) && submissions.filter(sub => sub.grade).map(sub => (
+          <div key={sub._id} className="border rounded-2xl p-5 shadow-md flex flex-col gap-2 bg-amber-50 hover:shadow-lg transition">
+            <span className="font-semibold text-gray-800">{sub.assignmentId.task}</span>
+            <p className="text-gray-600">{sub.assignmentId.description}</p>
+            <p className="text-blue-600 font-semibold">Grade: {sub.grade}</p>
+            {sub.feedback && <p className="text-gray-700">Feedback: {sub.feedback}</p>}
+            <a href={sub.fileUrl} target="_blank" rel="noreferrer" className="text-amber-700 underline hover:text-amber-800">View Submitted File</a>
+          </div>
+        ))}
       </div>
     </div>
   );

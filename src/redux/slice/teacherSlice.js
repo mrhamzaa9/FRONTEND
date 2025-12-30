@@ -7,7 +7,7 @@ export const fetchTeacherRequests = createAsyncThunk(
   "school/fetchTeacherRequests",
   async (_, { rejectWithValue }) => {
     try {
-      return await api("/api/school/teacher/request", "GET");
+      return await api("api/school/teacher/request", "GET");
     } catch (err) {
       return rejectWithValue(err.message);
     }
@@ -19,7 +19,7 @@ export const processTeacherRequest = createAsyncThunk(
   "school/processTeacherRequest",
   async ({ teacherId, approve, schoolId, courseIds = [] }, { rejectWithValue }) => {
     try {
-      return await api("/api/school/teacher/approve", "POST", {
+      return await api("api/school/teacher/approve", "POST", {
         teacherId,
         approve,
         schoolId,

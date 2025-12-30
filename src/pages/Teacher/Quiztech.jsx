@@ -38,7 +38,7 @@ const Quiztech = () => {
 
   return (
     <Box sx={{ maxWidth: 400, mx: "auto", mt: 4 }}>
-      <Typography variant="h5" sx={{ mb: 2 }}>Generate Quiz</Typography>
+      <Typography variant="h5" sx={{ mb: 2, backgroundColor: "#f5f5f5" }}>Generate Quiz</Typography>
 
       <TextField label="Topic" fullWidth margin="normal" value={topic} onChange={(e) => setTopic(e.target.value)} />
       <TextField select label="Difficulty" fullWidth margin="normal" value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>

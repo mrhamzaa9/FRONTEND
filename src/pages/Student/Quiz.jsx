@@ -1,29 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import Swal from "sweetalert2";
 import {
   fetchQuiz,
   submitQuiz,
   resetQuiz,
   fetchStudentQuizzes,
 } from "../../redux/slice/quizSlice";
-import {
-  Box,
-  Button,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  Typography,
-  CircularProgress,
-  MenuItem,
-  TextField,
-} from "@mui/material";
-import Swal from "sweetalert2";
 
 export const Quiz = () => {
   const dispatch = useDispatch();
-
-  const { questions, studentQuizzes, quizId, loading, result, error } =
-    useSelector((state) => state.quiz);
+  const { questions, studentQuizzes, quizId, loading, result, error } = useSelector((state) => state.quiz);
   const { enrolledCourses } = useSelector((state) => state.student);
 
   const [selectedQuiz, setSelectedQuiz] = useState("");
@@ -31,16 +18,12 @@ export const Quiz = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [started, setStarted] = useState(false);
 
-  // Fetch quizzes for the student
   useEffect(() => {
     if (enrolledCourses.length > 0) {
-      dispatch(fetchStudentQuizzes())
-        .unwrap()
-        .catch((err) => Swal.fire("Error", err, "error"));
+      dispatch(fetchStudentQuizzes()).unwrap().catch((err) => Swal.fire("Error", err, "error"));
     }
   }, [dispatch, enrolledCourses]);
 
-  // Reset quiz when new questions arrive
   useEffect(() => {
     if (questions.length > 0) {
       setStarted(true);
@@ -49,23 +32,15 @@ export const Quiz = () => {
     }
   }, [questions]);
 
-  // Show backend error
-  useEffect(() => {
-    if (error) Swal.fire("Error", error, "error");
-  }, [error]);
+  useEffect(() => { if (error) Swal.fire("Error", error, "error"); }, [error]);
 
-  // Start quiz
   const startQuiz = () => {
-    if (!selectedQuiz)
-      return Swal.fire("Error", "Please select a quiz", "error");
-
-    dispatch(fetchQuiz({ quizId: selectedQuiz }))
-      .unwrap()
+    if (!selectedQuiz) return Swal.fire("Error", "Please select a quiz", "error");
+    dispatch(fetchQuiz({ quizId: selectedQuiz })).unwrap()
       .then(() => setStarted(true))
       .catch((err) => Swal.fire("Error", err, "error"));
   };
 
-  // Handle answer selection
   const handleSelect = (qid, value) => {
     setAnswers((prev) => {
       const others = prev.filter((a) => a.questionId !== qid);
@@ -73,144 +48,113 @@ export const Quiz = () => {
     });
   };
 
-  // Submit quiz
   const handleSubmit = () => {
-    if (answers.length !== questions.length)
-      return Swal.fire("Error", "Answer all questions", "error");
-
+    if (answers.length !== questions.length) return Swal.fire("Error", "Answer all questions", "error");
     dispatch(submitQuiz({ quizId, answers }));
   };
 
-  // Loading state
-  if (loading) {
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
+  // Loading
+  if (loading) return <div className="text-center mt-8">Loading...</div>;
 
-  // Quiz result view
+  // Quiz result
   if (result) {
     return (
-      <Box sx={{ textAlign: "center", mt: 4 }}>
-        <Typography variant="h4">Result</Typography>
-        <Typography variant="h6">
-          Score: {result.correct} / {result.total}
-        </Typography>
-        <Button
-          sx={{ mt: 3 }}
-          variant="contained"
-          onClick={() => {
-            dispatch(resetQuiz());
-            setSelectedQuiz("");
-            setStarted(false);
-          }}
+      <div className="max-w-md mx-auto mt-8 p-6 bg-amber-50 rounded-2xl shadow-md text-center">
+        <h2 className="text-2xl font-bold text-amber-700 mb-4">Quiz Result</h2>
+        <p className="text-lg mb-2">Score: <span className="font-semibold text-blue-600">{result.correct}</span> / {result.total}</p>
+        <button
+          className="mt-4 px-6 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl transition cursor-pointer"
+          onClick={() => { dispatch(resetQuiz()); setSelectedQuiz(""); setStarted(false); }}
         >
           Take Another Quiz
-        </Button>
-      </Box>
+        </button>
+      </div>
     );
   }
 
-  // Quiz selection before start
+  // Quiz selection
   if (!started) {
     return (
-      <Box sx={{ maxWidth: 500, mx: "auto", mt: 4 }}>
-        <Typography variant="h5" sx={{ mb: 2 }}>
-          Select a Quiz
-        </Typography>
-
+      <div className="max-w-md mx-auto mt-8 p-6 bg-amber-50 rounded-2xl shadow-md">
+        <h2 className="text-2xl font-bold text-amber-700 mb-4">Select a Quiz</h2>
         {enrolledCourses.length === 0 ? (
-          <Typography color="error">
-            You are not enrolled in any course. Enroll to see available quizzes.
-          </Typography>
+          <p className="text-red-600">You are not enrolled in any course.</p>
         ) : studentQuizzes.length === 0 ? (
-          <Typography color="textSecondary">
-            No quizzes available for your enrolled courses.
-          </Typography>
+          <p className="text-gray-700">No quizzes available for your courses.</p>
         ) : (
           <>
-            <TextField
-              select
-              fullWidth
-              label="Available Quizzes"
+            <select
+              className="w-full p-3 border rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-amber-400"
               value={selectedQuiz}
               onChange={(e) => setSelectedQuiz(e.target.value)}
             >
+              <option value="">-- Select Quiz --</option>
               {studentQuizzes.map((q) => (
-                <MenuItem key={q._id} value={q._id}>
-                  {q.topic} - {q.difficulty}
-                </MenuItem>
+                <option key={q._id} value={q._id}>{q.topic} - {q.difficulty}</option>
               ))}
-            </TextField>
-
-            <Button
-              sx={{ mt: 3 }}
-              variant="contained"
-              fullWidth
+            </select>
+            <button
               onClick={startQuiz}
               disabled={!selectedQuiz}
+              className="w-full px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl transition cursor-pointer disabled:bg-amber-300"
             >
               Start Quiz
-            </Button>
+            </button>
           </>
         )}
-      </Box>
+      </div>
     );
   }
 
-  // Multi-step quiz view
+  // Quiz questions
   const currentQuestion = questions[currentStep];
-  const selectedAnswer =
-    answers.find((a) => a.questionId === currentQuestion.id)?.selected || "";
+  const selectedAnswer = answers.find((a) => a.questionId === currentQuestion.id)?.selected || "";
 
   return (
-    <Box sx={{ maxWidth: 700, mx: "auto", mt: 4 }}>
-      <Typography variant="h6">
+    <div className="max-w-2xl mx-auto mt-8 p-6 bg-amber-50 rounded-2xl border-amber-200 shadow-md">
+      <h3 className="text-lg font-semibold text-amber-700 mb-2">
         Question {currentStep + 1} of {questions.length}
-      </Typography>
-
-      <Typography variant="h5" sx={{ mt: 2, mb: 2 }}>
-        {currentQuestion.question}
-      </Typography>
-
-      <RadioGroup
-        value={selectedAnswer}
-        onChange={(e) => handleSelect(currentQuestion.id, e.target.value)}
-      >
+      </h3>
+      <p className="text-gray-800 mb-4">{currentQuestion.question}</p>
+      <div className="flex flex-col gap-2">
         {currentQuestion.options.map((opt) => (
-          <FormControlLabel key={opt} value={opt} control={<Radio />} label={opt} />
+          <label key={opt} className="flex items-center gap-2 p-2 border rounded-md hover:bg-amber-100 cursor-pointer transition">
+            <input
+              type="radio"
+              value={opt}
+              checked={selectedAnswer === opt}
+              onChange={() => handleSelect(currentQuestion.id, opt)}
+            />
+            {opt}
+          </label>
         ))}
-      </RadioGroup>
-
-      <Box sx={{ display: "flex", justifyContent: "space-between", mt: 3 }}>
-        <Button
-          variant="outlined"
+      </div>
+      <div className="flex justify-between mt-4">
+        <button
+          className="px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded-xl transition disabled:opacity-50"
           disabled={currentStep === 0}
-          onClick={() => setCurrentStep((prev) => prev - 1)}
+          onClick={() => setCurrentStep(prev => prev - 1)}
         >
           Previous
-        </Button>
-
+        </button>
         {currentStep < questions.length - 1 ? (
-          <Button
-            variant="contained"
+          <button
+            className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl transition disabled:opacity-50"
             disabled={!selectedAnswer}
-            onClick={() => setCurrentStep((prev) => prev + 1)}
+            onClick={() => setCurrentStep(prev => prev + 1)}
           >
             Next
-          </Button>
+          </button>
         ) : (
-          <Button
-            variant="contained"
+          <button
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition disabled:opacity-50"
             disabled={answers.length !== questions.length}
             onClick={handleSubmit}
           >
             Submit Quiz
-          </Button>
+          </button>
         )}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 };

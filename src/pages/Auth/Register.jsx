@@ -43,66 +43,29 @@ export default function Register() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="bg-white p-8 rounded-lg shadow-md w-full max-w-md"
-      >
-        <h2 className="text-2xl font-bold mb-6 text-center">Signup</h2>
+   <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 p-4">
+  <form className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
+    <h2 className="text-3xl font-bold mb-6 text-center text-amber-700">Create Account</h2>
 
-        <input
-          placeholder="Name"
-          {...register("name", { required: "Name is required" })}
-          className="w-full p-3 border rounded mb-4"
-        />
-        {errors.name && <p className="text-red-500 text-sm mb-2">{errors.name.message}</p>}
+    <input className="w-full p-3 border border-gray-300 rounded-lg mb-3 focus:ring-2 focus:ring-amber-400 outline-none transition" placeholder="Name" />
+    <input className="w-full p-3 border border-gray-300 rounded-lg mb-3 focus:ring-2 focus:ring-amber-400 outline-none transition" placeholder="Email" />
+    <input type="password" className="w-full p-3 border border-gray-300 rounded-lg mb-3 focus:ring-2 focus:ring-amber-400 outline-none transition" placeholder="Password" />
+    <select className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-amber-400 outline-none transition">
+      <option value="">Select Role</option>
+      <option value="schooladmin">School Admin</option>
+      <option value="teacher">Teacher</option>
+      <option value="student">Student</option>
+    </select>
 
-        <input
-          placeholder="Email"
-          {...register("email", { required: "Email is required" })}
-          className="w-full p-3 border rounded mb-4"
-        />
-        {errors.email && <p className="text-red-500 text-sm mb-2">{errors.email.message}</p>}
+    <button className="w-full p-3 rounded-xl text-white font-semibold transition shadow-lg bg-amber-600 hover:bg-amber-700 cursor-pointer">
+      Sign Up
+    </button>
 
-        <input
-          type="password"
-          placeholder="Password"
-          {...register("password", { required: "Password is required" })}
-          className="w-full p-3 border rounded mb-4"
-        />
-        {errors.password && <p className="text-red-500 text-sm mb-2">{errors.password.message}</p>}
+    <p className="text-center mt-4 text-amber-700">
+      Already have an account? <Link to="/login" className="hover:underline">Login</Link>
+    </p>
+  </form>
+</div>
 
-        <select
-          {...register("role", { required: "Role is required" })}
-          className="w-full p-3 border rounded mb-4"
-        >
-          <option value="">Select Role</option>
-          <option value="schooladmin">School Admin</option>
-          <option value="teacher">Teacher</option>
-          <option value="student">Student</option>
-        </select>
-        {errors.role && <p className="text-red-500 text-sm mb-2">{errors.role.message}</p>}
-
-        <button
-          type="submit"
-          disabled={isSubmitting || loading === "loading"}
-          className={`w-full p-2 rounded-2xl text-white ${
-            isSubmitting || loading === "loading"
-              ? "bg-blue-300 cursor-not-allowed"
-              : "bg-blue-500 hover:bg-blue-600"
-          }`}
-        >
-          {isSubmitting || loading === "loading" ? "Submitting..." : "SUBMIT"}
-        </button>
-
-        {error && <p className="text-red-500 text-center mt-2">{error}</p>}
-
-        <div className="text-center mt-4">
-          <Link to="/login" className="text-blue-500 hover:underline">
-            Already have an account? Login
-          </Link>
-        </div>
-      </form>
-    </div>
   );
 }

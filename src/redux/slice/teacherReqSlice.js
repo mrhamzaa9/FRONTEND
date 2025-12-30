@@ -1,131 +1,131 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { api } from "../../service/api";
 
-/* ======================
-   FETCH SCHOOLS
-====================== */
+/* =========================
+   THUNKS
+========================= */
+
+// 1️⃣ Fetch all schools
 export const fetchSchools = createAsyncThunk(
   "teacherReq/fetchSchools",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await fetch("http://localhost:4000/api/school/", {
-        credentials: "include",
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
-      return data;
+      return await api("/api/school", "GET");
     } catch (err) {
       return rejectWithValue(err.message);
     }
   }
 );
 
-/* ======================
-   FETCH APPROVED COURSES
-====================== */
+// 2️⃣ Fetch approved schools (teacher side)
 export const fetchApprovedSchools = createAsyncThunk(
-  "teacherReq/fetchApproved",
+  "teacherReq/fetchApprovedSchools",
   async (_, { rejectWithValue }) => {
     try {
-      const res = await fetch(
-        "api/school/teacher-approve",
-        { credentials: "include" }
-      );
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
-      return data.schools;
+      return await api("api/school/approved", "GET");
     } catch (err) {
       return rejectWithValue(err.message);
     }
   }
 );
 
-/* ======================
-   REQUEST COURSE
-====================== */
+// 3️⃣ Request course
 export const requestCourse = createAsyncThunk(
   "teacherReq/requestCourse",
   async ({ schoolId, courseId }, { rejectWithValue }) => {
     try {
-      const res = await fetch(
-        "api/school/teacher/request",
-        {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ schoolId, courseIds: [courseId] }),
-        }
-      );
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
-      return { schoolId, courseId };
+      return await api("/api/school/teacher/request", "POST", {
+        schoolId,
+        courseIds: [courseId],
+      });
     } catch (err) {
       return rejectWithValue(err.message);
     }
   }
 );
 
-/* ======================
-   CANCEL COURSE
-====================== */
+// 4️⃣ Cancel request
 export const cancelCourse = createAsyncThunk(
   "teacherReq/cancelCourse",
-  async ({ schoolId, courseId }, { rejectWithValue }) => {
+  async ({ schoolId }, { rejectWithValue }) => {
     try {
-      const res = await fetch(
-        "http://localhost:4000/api/school/teacher/cancel",
-        {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ schoolId, courseId }),
-        }
-      );
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
-      return { schoolId, courseId };
+      return await api("/api/school/teacher/cancel", "POST", { schoolId });
     } catch (err) {
       return rejectWithValue(err.message);
     }
   }
 );
 
-/* ======================
+/* =========================
    SLICE
-====================== */
+========================= */
+
 const teacherReqSlice = createSlice({
   name: "teacherReq",
   initialState: {
     schools: [],
-    teacherCourses: {}, // ✅ SINGLE SOURCE OF TRUTH
+    teacherCourses: {}, // ⭐ normalized state
     loading: false,
     error: null,
   },
+
   reducers: {},
+
   extraReducers: (builder) => {
     builder
 
+      /* ===== FETCH SCHOOLS ===== */
+      .addCase(fetchSchools.pending, (state) => {
+        state.loading = true;
+      })
       .addCase(fetchSchools.fulfilled, (state, action) => {
+        state.loading = false;
         state.schools = action.payload;
       })
+      .addCase(fetchSchools.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
 
+      /* ===== FETCH APPROVED ===== */
+      .addCase(fetchApprovedSchools.fulfilled, (state, action) => {
+        const map = {};
+
+        action.payload.schools.forEach((school) => {
+          if (!map[school.schoolId]) {
+            map[school.schoolId] = {};
+          }
+
+          school.courseIds.forEach((course) => {
+            map[school.schoolId][course._id] = "approved";
+          });
+        });
+
+        state.teacherCourses = map;
+      })
+
+      /* ===== REQUEST COURSE ===== */
       .addCase(requestCourse.fulfilled, (state, action) => {
-        const { schoolId, courseId } = action.payload;
-        state.teacherCourses[schoolId] ??= {};
+        const { schoolId, courseId } = action.meta.arg;
+
+        if (!state.teacherCourses[schoolId]) {
+          state.teacherCourses[schoolId] = {};
+        }
+
         state.teacherCourses[schoolId][courseId] = "pending";
       })
 
+      /* ===== CANCEL COURSE ===== */
       .addCase(cancelCourse.fulfilled, (state, action) => {
-        const { schoolId, courseId } = action.payload;
-        delete state.teacherCourses[schoolId]?.[courseId];
-      })
+        const { schoolId } = action.meta.arg;
 
-      .addCase(fetchApprovedSchools.fulfilled, (state, action) => {
-        action.payload.forEach((school) => {
-          state.teacherCourses[school.schoolId] ??= {};
-          school.courseIds.forEach((course) => {
-            state.teacherCourses[school.schoolId][course._id] = "approved";
+        if (state.teacherCourses[schoolId]) {
+          Object.keys(state.teacherCourses[schoolId]).forEach((courseId) => {
+            if (state.teacherCourses[schoolId][courseId] === "pending") {
+              delete state.teacherCourses[schoolId][courseId];
+            }
           });
-        });
+        }
       });
   },
 });

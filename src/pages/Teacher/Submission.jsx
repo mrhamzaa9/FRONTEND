@@ -52,7 +52,7 @@ export default function Submission() {
 
   return (
     <div className="p-6">
-      <h2 className="text-2xl font-bold mb-5">Student Submissions</h2>
+      <h2 className="text-2xl text-amber-600 font-bold mb-5">Student Submissions</h2>
 
       {submissions.length === 0 && <p>No submissions found.</p>}
 
@@ -71,7 +71,7 @@ export default function Submission() {
               href={s.fileUrl}
               target="_blank"
               rel="noreferrer"
-              className="text-blue-600 underline"
+              className="text-amber-600 underline"
             >
               View Submitted File
             </a>
