@@ -1,20 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchQuiz,
-  fetchTeacherQuizzes,
-  resetQuiz,
-} from "../../redux/slice/quizSlice";
-import {
-  Box,
-  Button,
-  TextField,
-  MenuItem,
-  Typography,
-  CircularProgress,
-} from "@mui/material";
+import { fetchQuiz, fetchTeacherQuizzes } from "../../redux/slice/quizSlice";
+import { Box, Button, TextField, MenuItem, Typography, CircularProgress } from "@mui/material";
 import Swal from "sweetalert2";
 import Spinner from "../../components/Spinner";
+import { fetchSchoolsWithCourses } from "../../redux/slice/schoolSlice";
 
 const Quiztech = () => {
   const dispatch = useDispatch();
@@ -24,96 +14,49 @@ const Quiztech = () => {
   const [topic, setTopic] = useState("");
   const [difficulty, setDifficulty] = useState("medium");
 
-  // Fetch teacher quizzes on mount
   useEffect(() => {
-    dispatch(fetchTeacherQuizzes()).catch((err) =>
-      Swal.fire("Error", err, "error")
-    );
+    dispatch(fetchTeacherQuizzes()).catch((err) => Swal.fire("Error", err, "error"));
+    dispatch(fetchSchoolsWithCourses());
   }, [dispatch]);
 
-  // Only allow quiz generation if teacher is approved
   if (loading) return <Spinner />;
-  if (!schools || schools.length === 0)
-    return (
-      <p className="text-red-500 text-center mt-10">
-        ⛔ You cannot create quiz until approved by school.
-      </p>
-    );
 
-  // Generate new quiz
+  if (!schools || schools.length === 0)
+    return <p className="text-red-500 text-center mt-10">⛔ You cannot create quiz until approved by school.</p>;
+
   const handleGenerate = () => {
-    if (!topic.trim())
-      return Swal.fire("Error", "Topic is required", "error");
+    if (!topic.trim()) return Swal.fire("Error", "Topic is required", "error");
 
     dispatch(fetchQuiz({ topic, difficulty }))
       .unwrap()
       .then((res) => {
-        Swal.fire(
-          "Success",
-          `Quiz generated! Quiz ID: ${res.quizId}`,
-          "success"
-        );
-        // Refresh teacher quizzes to include the new one
-        dispatch(fetchTeacherQuizzes()).catch((err) =>
-          Swal.fire("Error", err, "error")
-        );
+        Swal.fire("Success", `Quiz generated! Quiz ID: ${res.quizId}`, "success");
+        dispatch(fetchTeacherQuizzes()).catch((err) => Swal.fire("Error", err, "error"));
       })
       .catch((err) => Swal.fire("Error", err, "error"));
   };
 
   return (
     <Box sx={{ maxWidth: 400, mx: "auto", mt: 4 }}>
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        Generate Quiz
-      </Typography>
+      <Typography variant="h5" sx={{ mb: 2 }}>Generate Quiz</Typography>
 
-      <TextField
-        label="Topic"
-        fullWidth
-        margin="normal"
-        value={topic}
-        onChange={(e) => setTopic(e.target.value)}
-      />
-
-      <TextField
-        select
-        label="Difficulty"
-        fullWidth
-        margin="normal"
-        value={difficulty}
-        onChange={(e) => setDifficulty(e.target.value)}
-      >
+      <TextField label="Topic" fullWidth margin="normal" value={topic} onChange={(e) => setTopic(e.target.value)} />
+      <TextField select label="Difficulty" fullWidth margin="normal" value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
         <MenuItem value="easy">Easy</MenuItem>
         <MenuItem value="medium">Medium</MenuItem>
         <MenuItem value="hard">Hard</MenuItem>
       </TextField>
 
-      <Button
-        variant="contained"
-        fullWidth
-        onClick={handleGenerate}
-        disabled={loading}
-        sx={{ mt: 2 }}
-      >
+      <Button variant="contained" fullWidth onClick={handleGenerate} disabled={loading} sx={{ mt: 2 }}>
         {loading ? <CircularProgress size={24} /> : "Generate Quiz"}
       </Button>
 
-      {teacherQuizzes && teacherQuizzes.length > 0 && (
+      {teacherQuizzes.length > 0 && (
         <Box sx={{ mt: 4 }}>
           <Typography variant="h6">Your Quizzes</Typography>
           {teacherQuizzes.map((q) => (
-            <Box
-              key={q._id}
-              sx={{
-                border: "1px solid #ccc",
-                borderRadius: 2,
-                p: 2,
-                mt: 2,
-              }}
-            >
-              <Typography>
-                <strong>{q.topic}</strong> - {q.difficulty}
-              </Typography>
+            <Box key={q._id} sx={{ border: "1px solid #ccc", borderRadius: 2, p: 2, mt: 2 }}>
+              <Typography><strong>{q.topic}</strong> - {q.difficulty}</Typography>
               <Typography>Total Questions: {q.totalQuestions}</Typography>
               <Typography>Status: {q.isActive ? "Active" : "Inactive"}</Typography>
             </Box>

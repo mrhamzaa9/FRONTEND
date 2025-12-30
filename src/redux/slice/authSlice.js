@@ -24,6 +24,19 @@ export const registerUser = createAsyncThunk(
     }
   }
 );
+export const logoutUser = createAsyncThunk(
+  "auth/logoutUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      // Call backend logout to clear cookie
+      await api("/api/auth/logout", "POST", null, true); // true = include credentials
+      return true;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 
 // Initialize state from localStorage if available
 const initialState = {
@@ -36,12 +49,7 @@ const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    logout: (state) => {
-      state.user = null;
-      state.loading = "idle";
-      state.error = null;
-      localStorage.removeItem("user"); // remove from localStorage on logout
-    },
+  
   },
   extraReducers: (builder) => {
     builder
@@ -74,7 +82,15 @@ const authSlice = createSlice({
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = "failed";
         state.error = action.payload;
-      });
+      })
+       // LOGOUT
+    .addCase(logoutUser.fulfilled, (state) => {
+      state.user = null;
+      state.loading = "idle";
+      state.error = null;
+      localStorage.removeItem("user");
+    });
+
   },
 });
 

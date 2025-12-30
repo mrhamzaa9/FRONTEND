@@ -70,6 +70,18 @@ export const submitAssignment = createAsyncThunk(
     }
   }
 );
+export const fetchStudentState = createAsyncThunk(
+  "student/fetchStudentState",
+  async (_, { rejectWithValue }) => {
+    try {
+      const data = await api("/api/enroll/me", "GET");
+      return data;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
 
 // ===========================
 // Slice
@@ -99,16 +111,8 @@ const studentSlice = createSlice({
       })
       .addCase(enrollCourse.fulfilled, (state, action) => {
         state.loading = "succeeded";
-        const { courseId, message } = action.payload;
-        if (!state.enrolledCourses.includes(courseId)) {
-          state.enrolledCourses.push(courseId);
-          if (typeof window !== "undefined") {
-            localStorage.setItem(
-              "enrolledCourses",
-              JSON.stringify(state.enrolledCourses)
-            );
-          }
-        }
+        const {  message } = action.payload;
+      
         state.message = message || "Course enrolled successfully";
       })
       .addCase(enrollCourse.rejected, (state, action) => {
@@ -122,16 +126,8 @@ const studentSlice = createSlice({
       })
       .addCase(selectSchool.fulfilled, (state, action) => {
         state.loading = "succeeded";
-        const { schoolId, message } = action.payload;
-        if (!state.selectedSchools.includes(schoolId)) {
-          state.selectedSchools.push(schoolId);
-          if (typeof window !== "undefined") {
-            localStorage.setItem(
-              "selectedSchools",
-              JSON.stringify(state.selectedSchools)
-            );
-          }
-        }
+        const { message } = action.payload;
+      
         state.message = message || "School selected successfully";
       })
       .addCase(selectSchool.rejected, (state, action) => {
@@ -152,6 +148,7 @@ const studentSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      
 
       // Submit assignment
       .addCase(submitAssignment.pending, (state) => {
@@ -167,7 +164,11 @@ const studentSlice = createSlice({
       .addCase(submitAssignment.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+  .addCase(fetchStudentState.fulfilled, (state, action) => {
+      state.selectedSchools = action.payload.selectedSchools || [];
+      state.enrolledCourses = action.payload.enrolledCourses || [];
+    })
   },
 });
 

@@ -16,7 +16,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../redux/slice/authSlice";
+import { logoutUser } from "../redux/slice/authSlice";
 
 const drawerWidth = 260;
 
@@ -26,7 +26,7 @@ export default function Sidebar({ children }) {
     const [mobileOpen, setMobileOpen] = React.useState(false);
 
     const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
-    const handleLogout = () => dispatch(logout());
+    const handleLogout = () => dispatch(logoutUser());
 
     // Get user from Redux store
     const user = useSelector((state) => state.auth.user);

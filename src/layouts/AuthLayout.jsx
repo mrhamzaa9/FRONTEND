@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import Login from '../pages/Auth/Login'
 import Register from '../pages/Auth/Register'
-import VerifyEmail from '../pages/Auth/VerfiyEmial'
+import VerifyEmail from '../pages/Auth/VerfiyEmail'
 import Forgetpass from '../pages/Auth/Forgetpass'
 import Reset from '../pages/Auth/Reset'
 function AuthLayout() {

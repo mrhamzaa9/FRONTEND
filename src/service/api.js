@@ -1,11 +1,21 @@
-export const api = async (url, method = "GET", body) => {
+export const api = async (url, method = "GET", body, isFormData = false) => {
   const options = {
     method,
-    headers: { "Content-Type": "application/json" },
     credentials: "include",
   };
 
-  if (body) options.body = JSON.stringify(body);
+  if (body) {
+    if (isFormData) {
+      // ✅ FormData: let browser set headers
+      options.body = body;
+    } else {
+      // ✅ JSON request
+      options.headers = {
+        "Content-Type": "application/json",
+      };
+      options.body = JSON.stringify(body);
+    }
+  }
 
   const res = await fetch(`http://localhost:4000${url}`, options);
   const data = await res.json();
