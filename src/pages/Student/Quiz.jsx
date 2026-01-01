@@ -8,6 +8,7 @@ import {
   fetchStudentQuizzes,
 } from "../../redux/slice/quizSlice";
 import { Spinner } from "react-bootstrap";
+import StudentQuizChart from "../../components/Studentquizchart";
 
 export const Quiz = () => {
   const dispatch = useDispatch();
@@ -76,6 +77,7 @@ export const Quiz = () => {
   // Quiz selection
   if (!started) {
     return (
+          <>
       <div className="max-w-md mx-auto mt-8 p-6 bg-amber-50 rounded-2xl shadow-md">
         <h2 className="text-2xl font-bold text-amber-700 mb-4">Select a Quiz</h2>
         {enrolledCourses.length === 0 ? (
@@ -104,6 +106,11 @@ export const Quiz = () => {
           </>
         )}
       </div>
+      
+      <div  className="mt-10">
+      <StudentQuizChart/>
+      </div>
+  </>
     );
   }
 

@@ -51,7 +51,7 @@ export default function SuperAdminContent() {
   <Chart />
   {/* You can add another chart here, e.g., Users per School */}
 </div>
-
+   
     </div>
   );
 }

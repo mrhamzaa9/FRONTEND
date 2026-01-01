@@ -10,12 +10,10 @@ export const fetchSuperAdminDashboard = createAsyncThunk(
   "dashboard/fetchSuperAdmin",
   async (_, { rejectWithValue }) => {
     try {
-      const { data } = await api.get("/dashboard/superadmin");
-      return data;
+      const data = await api("/api/chart/superadmin"); // just call api directly
+      return data; // contains { courses, submittedCount, pendingCount, quizResults }
     } catch (err) {
-      return rejectWithValue(
-        err.response?.data?.error || err.message
-      );
+      return rejectWithValue(err.message);
     }
   }
 );
@@ -25,7 +23,7 @@ export const fetchSchoolAdminDashboard = createAsyncThunk(
   "dashboard/fetchSchoolAdmin",
   async (schoolId, { rejectWithValue }) => {
     try {
-      const { data } = await api.get(`/dashboard/schooladmin/${schoolId}`);
+      const { data } = await api.get(`api/dashboard/schooladmin/${schoolId}`);
       return data;
     } catch (err) {
       return rejectWithValue(
@@ -38,33 +36,28 @@ export const fetchSchoolAdminDashboard = createAsyncThunk(
 // Teacher Dashboard
 export const fetchTeacherDashboard = createAsyncThunk(
   "dashboard/fetchTeacher",
-  async (teacherId, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const { data } = await api.get(`/dashboard/teacher/${teacherId}`);
-      return data;
+      const data = await api("/api/chart/teacher"); // just call api directly
+      return data; // contains { courses, submittedCount, pendingCount, quizResults }
     } catch (err) {
-      return rejectWithValue(
-        err.response?.data?.error || err.message
-      );
+      return rejectWithValue(err.message);
     }
   }
 );
 
-// Student Dashboard
+// Async thunk to fetch student dashboard
 export const fetchStudentDashboard = createAsyncThunk(
   "dashboard/fetchStudent",
-  async (studentId, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const { data } = await api.get(`/dashboard/student/${studentId}`);
-      return data;
+      const data = await api("/api/chart/student"); // just call api directly
+      return data; // contains { courses, submittedCount, pendingCount, quizResults }
     } catch (err) {
-      return rejectWithValue(
-        err.response?.data?.error || err.message
-      );
+      return rejectWithValue(err.message);
     }
   }
 );
-
 /* ===============================
    Slice
 ================================ */

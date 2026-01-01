@@ -6,6 +6,7 @@ import { useAuth } from '../context/auth';
 import Assignmentstd from '../pages/Student/Assignmentstd';
 import { Quiz } from '../pages/Student/Quiz';
 
+
 function StudentLayout() {
     const { user } = useAuth();
   let routes = <>
@@ -20,6 +21,7 @@ function StudentLayout() {
     </>
     return (
         <>
+  
         <Sidebar role={user?.role}>
             <Routes>
                 {routes}

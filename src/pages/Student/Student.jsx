@@ -5,10 +5,14 @@ import Spinner from "../../components/Spinner";
 import { enrollCourse, selectSchool, clearMessage, fetchStudentState } from "../../redux/slice/student";
 import { fetchSchools } from "../../redux/slice/teacherReqSlice";
 
+
+
 export default function Student() {
   const dispatch = useDispatch();
+
   const { schools, loading: schoolsLoading } = useSelector((state) => state.teacherReq);
   const { enrolledCourses, selectedSchools, loading: studentLoading, message, error } = useSelector((state) => state.student);
+
 
   useEffect(() => {
     dispatch(fetchSchools());
@@ -16,7 +20,10 @@ export default function Student() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (message) { Swal.fire("Success", message, "success"); dispatch(clearMessage()); }
+    if (message) { 
+      Swal.fire("Success", message, "success"); 
+      dispatch(clearMessage()); 
+    }
     if (error) Swal.fire("Error", error, "error");
   }, [message, error, dispatch]);
 
@@ -61,7 +68,7 @@ export default function Student() {
                         onClick={() => handleEnrollCourse(course._id)}
                         className="px-2 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-xl transition cursor-pointer"
                       >
-                        Enroll
+                        Enroll 
                       </button>
                     )}
                   </div>

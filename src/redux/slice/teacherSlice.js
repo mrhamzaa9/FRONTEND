@@ -1,25 +1,28 @@
-
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { api } from "../../service/api";
 
 // Fetch pending teacher requests
 export const fetchTeacherRequests = createAsyncThunk(
-  "school/fetchTeacherRequests",
+  "teacher/fetchTeacherRequests",
   async (_, { rejectWithValue }) => {
     try {
-      return await api("api/school/teacher/request", "GET");
+      return await api("/api/school/teacher/request", "GET");
     } catch (err) {
       return rejectWithValue(err.message);
     }
   }
 );
 
-// Approve/reject teacher
+// Approve / Reject teacher
 export const processTeacherRequest = createAsyncThunk(
-  "school/processTeacherRequest",
-  async ({ teacherId, approve, schoolId, courseIds = [] }, { rejectWithValue }) => {
+  "teacher/processTeacherRequest",
+  async (
+    { requestId, teacherId, approve, schoolId, courseIds = [] },
+    { rejectWithValue }
+  ) => {
     try {
-      return await api("api/school/teacher/approve", "POST", {
+      return await api("/api/school/teacher/approve", "POST", {
+        requestId,
         teacherId,
         approve,
         schoolId,
@@ -41,7 +44,10 @@ const teacherSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchTeacherRequests.pending, (state) => { state.loading = "loading"; })
+      // fetch requests
+      .addCase(fetchTeacherRequests.pending, (state) => {
+        state.loading = "loading";
+      })
       .addCase(fetchTeacherRequests.fulfilled, (state, action) => {
         state.loading = "succeeded";
         state.requests = action.payload;
@@ -50,10 +56,16 @@ const teacherSlice = createSlice({
         state.loading = "failed";
         state.error = action.payload;
       })
-      .addCase(processTeacherRequest.pending, (state) => { state.loading = "loading"; })
+
+      // process approve/reject
+      .addCase(processTeacherRequest.pending, (state) => {
+        state.loading = "loading";
+      })
       .addCase(processTeacherRequest.fulfilled, (state, action) => {
         state.loading = "succeeded";
-        state.requests = state.requests.filter(req => req._id !== action.meta.arg.teacherId);
+        state.requests = state.requests.filter(
+          (req) => req._id !== action.meta.arg.requestId
+        );
       })
       .addCase(processTeacherRequest.rejected, (state, action) => {
         state.loading = "failed";

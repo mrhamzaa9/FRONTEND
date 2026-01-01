@@ -11,6 +11,7 @@ import {
   cancelCourse,
   clearError,
 } from "../../redux/slice/teacherReqSlice";
+import Teacherchart from "../../components/Teacherchart";
 
 export default function TeacherDashboard() {
   const dispatch = useDispatch();
@@ -44,7 +45,7 @@ export default function TeacherDashboard() {
       <Notifycenter />
 
       <h2 className="text-2xl  text-amber-600 font-bold mb-5">Teacher Dashboard</h2>
-
+         <Teacherchart/>
       {schools.length === 0 && <p>No schools found.</p>}
 
       {schools.map((school) => (

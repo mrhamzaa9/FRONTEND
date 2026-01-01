@@ -9,6 +9,7 @@ import Submission from '../pages/Teacher/Submission';
 import Quiztech from '../pages/Teacher/Quiztech';
 
 
+
 function TeacherLayout() {
     const { user } = useAuth();
      let routes = <>
@@ -27,6 +28,7 @@ function TeacherLayout() {
         
           <Notification/>
          <Sidebar role={user?.role}>
+
             <Routes>
                 {routes}
             </Routes>

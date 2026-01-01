@@ -1,68 +1,93 @@
-
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUsers } from "../redux/slice/schoolSlice";
+import { Bar, Doughnut } from "react-chartjs-2";
+import { fetchSuperAdminDashboard } from "../redux/slice/dashboardSlice";
 import Spinner from "./Spinner";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+import "chart.js/auto";
 
-export default function Chart() {
+const Chart= () => {
   const dispatch = useDispatch();
-  const { users, loading, error } = useSelector((state) => state.school);
+  const { superAdmin, loading } = useSelector((state) => state.dashboard);
 
   useEffect(() => {
-    if (!users || users.length === 0) {
-      dispatch(fetchUsers());
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    dispatch(fetchSuperAdminDashboard());
+  }, [dispatch]);
 
-  if (loading === "loading") return <Spinner />;
-  if (error) return <p className="text-red-500">{error}</p>;
+  if (loading) return <Spinner />;
+  if (!superAdmin) return <p style={{ textAlign: "center" }}>No data found</p>;
 
-  const roleCounts = users.reduce((acc, user) => {
-    acc[user.role] = (acc[user.role] || 0) + 1;
-    return acc;
-  }, {});
+  const {
+    studentsPerSchool,
+    teachersPerSchool,
+    coursesPerSchool,
+    monthlyRegistrations,
+    quizAverage,
+  } = superAdmin;
 
-  const chartData = Object.keys(roleCounts).map((role) => ({
-    name: role,
-    value: roleCounts[role],
-  }));
+  // Bar chart helper
+  const barData = (items, labelKey, valueKey, color) => ({
+    labels: items.map((i) => i[labelKey]),
+    datasets: [
+      {
+        label: valueKey,
+        data: items.map((i) => i[valueKey]),
+        backgroundColor: color,
+      },
+    ],
+  });
 
-  const COLORS = ["#F59E0B", "#B45309", "#9333EA", "#2563EB"];
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { position: "bottom" } },
+    scales: { y: { beginAtZero: true } },
+  };
+
+  const doughnutData = {
+    labels: ["Average Quiz Score", "Remaining"],
+    datasets: [
+      {
+        data: [quizAverage?.[0]?.avgScore || 0, 100 - (quizAverage?.[0]?.avgScore || 0)],
+        backgroundColor: ["#f59e0b", "#d1d5db"],
+      },
+    ],
+  };
 
   return (
-    <div className="bg-white border-2 border-amber-300 p-6 rounded-xl shadow mt-6">
-      <h2 className="text-xl font-semibold text-amber-800 mb-4">
-        Users by Role
-      </h2>
-      <ResponsiveContainer width="100%" height={300}>
-        <PieChart >
-          <Pie
-            data={chartData}
-            dataKey="value"
-            nameKey="name"
-            cx="50%"
-            cy="50%"
-            outerRadius={80}
-            fill="#8884d8"
-            label
-          >
-            {chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-            ))}
-          </Pie>
-          <Tooltip />
-          <Legend />
-        </PieChart>
-      </ResponsiveContainer>
+    <div className="space-y-10">
+      {/* Students per school */}
+      <div style={{ width: "50%", height: 300, overflowX: "auto", overflowY: "hidden" }}>
+        <h4 style={{ textAlign: "center" }}>Students per School</h4>
+        <Bar data={barData(studentsPerSchool, "schoolName", "count", "#f59e0b")} options={options} />
+      </div>
+
+  
+
+      {/* Courses per school */}
+      <div style={{ width: "100%", height: 300, overflowX: "auto", overflowY: "hidden" }}>
+        <h4 style={{ textAlign: "center" }}>Courses per School</h4>
+        <Bar data={barData(coursesPerSchool, "name", "courseCount", "#3b82f6")} options={options} />
+      </div>
+
+      {/* Monthly Registrations */}
+      <div style={{ width: "100%", height: 300, overflowX: "auto",overflowY: "hidden" }}>
+        <h4 style={{ textAlign: "center" }}>Monthly Registrations</h4>
+        <Bar
+          data={{
+            labels: monthlyRegistrations.map((m) => `${m.month}/${m.year}`),
+            datasets: [{ label: "Students", data: monthlyRegistrations.map((m) => m.count), backgroundColor: "#f43f5e" }],
+          }}
+          options={options}
+        />
+      </div>
+
+      {/* Average Quiz Score */}
+      <div style={{ width: "100%", height: 300 }}>
+        <h4 style={{ textAlign: "center" }}>Average Quiz Score</h4>
+        <Doughnut data={doughnutData} options={{ responsive: true, maintainAspectRatio: false }} />
+      </div>
     </div>
   );
-}
+};
+
+export default Chart;

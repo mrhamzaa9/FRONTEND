@@ -5,6 +5,8 @@ import Spinner from "../../components/Spinner";
 import { fetchAssignmentsByCourse, submitAssignment, clearMessage as clearStudentMessage } from "../../redux/slice/student";
 import { fetchResultAssignments, clearMessage as clearSubmissionMessage } from "../../redux/slice/SubmissionSlice";
 
+import Studentchart from "../../components/Studentchart";
+
 export default function Assignmentstd() {
   const dispatch = useDispatch();
   const { assignments, loading: studentLoading, message: studentMessage, error: studentError } = useSelector((state) => state.student);
@@ -96,6 +98,9 @@ export default function Assignmentstd() {
             <a href={sub.fileUrl} target="_blank" rel="noreferrer" className="text-amber-700 underline hover:text-amber-800">View Submitted File</a>
           </div>
         ))}
+      </div>
+      <div className="mt-10">
+        <Studentchart/>
       </div>
     </div>
   );
