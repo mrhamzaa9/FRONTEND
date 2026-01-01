@@ -47,7 +47,7 @@ const Quiztech = () => {
         <MenuItem value="hard">Hard</MenuItem>
       </TextField>
 
-      <button className="bg-amber-500 p-2 hover:bg-amber-600 w-full text-white rounded-xl" variant="contained" fullWidth onClick={handleGenerate} disabled={loading} sx={{ mt: 2 }}>
+      <button className="bg-amber-500 p-2 hover:bg-amber-600 w-full text-white rounded-xl" variant="contained" onClick={handleGenerate} disabled={loading} sx={{ mt: 2 }}>
         {loading ? <CircularProgress size={24} /> : "Generate Quiz"}
       </button>
 

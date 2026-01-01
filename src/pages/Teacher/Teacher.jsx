@@ -9,6 +9,7 @@ import {
   fetchApprovedSchools,
   requestCourse,
   cancelCourse,
+  clearError,
 } from "../../redux/slice/teacherReqSlice";
 
 export default function TeacherDashboard() {
@@ -24,7 +25,7 @@ export default function TeacherDashboard() {
   useEffect(() => {
     dispatch(fetchSchools());
     dispatch(fetchApprovedSchools());
-  }, [dispatch]);
+  }, []);
 
   /* ======================
      ERROR HANDLING
@@ -32,8 +33,9 @@ export default function TeacherDashboard() {
   useEffect(() => {
     if (error) {
       Swal.fire("Error", error, "error");
+      dispatch(clearError());
     }
-  }, [error]);
+  }, [error, dispatch]);
 
   if (loading) return <Spinner />;
 

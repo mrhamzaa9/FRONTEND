@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchSchools, fetchUsers } from "../../redux/slice/schoolSlice";
 import Spinner from "../../components/Spinner";
+import Chart from "../../components/Chart";
 
 export default function SuperAdminContent() {
   const dispatch = useDispatch();
@@ -46,6 +47,11 @@ export default function SuperAdminContent() {
           No activities yet.
         </div>
       </div>
+      <div className="mt-10 lg:grid grid-cols-2 md:grid-cols-2 gap-6">
+  <Chart />
+  {/* You can add another chart here, e.g., Users per School */}
+</div>
+
     </div>
   );
 }

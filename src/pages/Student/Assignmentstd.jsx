@@ -54,14 +54,30 @@ export default function Assignmentstd() {
                   <span className="text-green-600 font-semibold">Submitted</span>
                 ) : (
                   <>
-                    <input type="file" onChange={(e) => handleFileChange(a._id, e.target.files[0])} className="border rounded p-1" />
+                    <div>
+                      <input
+                        id={`file-${a._id}`}
+                        type="file"
+                        onChange={(e) => handleFileChange(a._id, e.target.files[0])}
+                        className="hidden"
+                      />
+                      <label
+                        htmlFor={`file-${a._id}`}
+                        className="px-2 py-1 bg-amber-200 text-white rounded-xl hover:bg-amber-600 cursor-pointer"
+                      >
+                        Upload File
+                      </label>
+                      {a.selectedFile && <span className="ml-2">{a.selectedFile.name}</span>}
+                    </div>
+
                     <button
                       onClick={() => handleSubmit(a._id)}
-                      className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl transition cursor-pointer"
+                      className="px-2 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-xl transition cursor-pointer"
                     >
                       Submit
                     </button>
                   </>
+                  
                 )}
               </div>
             );

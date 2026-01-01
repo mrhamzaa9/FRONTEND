@@ -53,7 +53,7 @@ export default function Sidebar({ children }) {
       { name: "Quiz", path: "/teacher/quiz" },
     ],
     student: [
-      { name: "My School", path: "/student/school" },
+      { name: "My School", path: "/school" },
       { name: "Assignments", path: "/schoolassign" },
       { name: "Quiz", path: "/quiz" },
     ],

@@ -88,11 +88,11 @@ const authSlice = createSlice({
       state.user = null;
       state.loading = "idle";
       state.error = null;
-      localStorage.removeItem("user");
+      localStorage.removeItem("user")
+     
     });
 
   },
 });
 
-export const { logout } = authSlice.actions;
 export default authSlice.reducer;

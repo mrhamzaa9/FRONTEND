@@ -11,6 +11,7 @@ import studentAssignmentReducer from "./slice/assignmentSlice"
 import SubmissionReducer from "./slice/SubmissionSlice"
 import quizSlice from './slice/quizSlice'
 import verifyReducer from'./slice/verifySlice'
+import dashboardSlice from"./slice/dashboardSlice"
 import passwordReducer from "./slice/passwordSlice"
 export const store = configureStore({
   reducer: {
@@ -27,5 +28,6 @@ export const store = configureStore({
     quiz:quizSlice,
     verify : verifyReducer,
     password:passwordReducer,
+    dashboard:dashboardSlice,
   },
 });
