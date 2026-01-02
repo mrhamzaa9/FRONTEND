@@ -69,7 +69,8 @@ export default function Sidebar({ children }) {
         height: "100%",
         display: "flex",
         flexDirection: "column",
-        backgroundColor: "#FEF3C7", // amber-100
+        backgroundColor: "#FEF3C7",
+        overflowY: "hidden", // amber-100
       }}
     >
       <Typography

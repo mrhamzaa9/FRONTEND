@@ -6,7 +6,7 @@ import Notifycenter from "../../components/Notifycenter";
 
 import {
   fetchSchools,
-  fetchApprovedSchools,
+//  fetchApprovedSchools,
   requestCourse,
   cancelCourse,
   clearError,
@@ -25,7 +25,7 @@ export default function TeacherDashboard() {
   ====================== */
   useEffect(() => {
     dispatch(fetchSchools());
-    dispatch(fetchApprovedSchools());
+    // dispatch(fetchApprovedSchools());
   }, []);
 
   /* ======================
@@ -45,7 +45,7 @@ export default function TeacherDashboard() {
       <Notifycenter />
 
       <h2 className="text-2xl  text-amber-600 font-bold mb-5">Teacher Dashboard</h2>
-         <Teacherchart/>
+ 
       {schools.length === 0 && <p>No schools found.</p>}
 
       {schools.map((school) => (
@@ -109,8 +109,15 @@ export default function TeacherDashboard() {
               );
             })}
           </div>
+          
         </div>
+        
+              
       ))}
+      <div className="mt-10">
+        <Teacherchart/>
+    </div>
     </div>
   );
+
 }

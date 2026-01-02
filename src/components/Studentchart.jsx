@@ -39,15 +39,21 @@ const Studentchart = () => {
     },
   };
 
+
+  // ... (logic remains same)
   return (
-    <div style={{ width: 300, height: 300, margin: "auto" }}>
-      <h4 style={{ textAlign: "center" }}>My Assignments</h4>
-      <Doughnut data={data} options={options} />
+    <div className="w-full p-4 bg-white rounded-xl shadow">
+      <h4 className="text-center mb-4 font-semibold text-lg">My Assignments</h4>
+      {/* Aspect ratio container: taller on mobile, standard on desktop */}
+      <div className="relative h-[250px] sm:h-[300px] w-[80%] mx-auto">
+        <Doughnut data={data} options={options} />
+      </div>
       {total === 0 && (
-        <p style={{ textAlign: "center", color: "#6b7280" }}>No assignments yet</p>
+        <p className="text-center text-gray-500 mt-2">No assignments yet</p>
       )}
     </div>
   );
-};
+}
+;
 
 export default Studentchart;

@@ -21,15 +21,13 @@ export const fetchSuperAdminDashboard = createAsyncThunk(
 // School Admin Dashboard
 export const fetchSchoolAdminDashboard = createAsyncThunk(
   "dashboard/fetchSchoolAdmin",
-  async (schoolId, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const { data } = await api.get(`api/dashboard/schooladmin/${schoolId}`);
-      return data;
+      const data = await api("/api/chart/schooladmin"); // just call api directly
+      return data; // contains { courses, submittedCount, pendingCount, quizResults }
     } catch (err) {
-      return rejectWithValue(
-        err.response?.data?.error || err.message
-      );
-    }
+      return rejectWithValue(err.message);
+    } 
   }
 );
 

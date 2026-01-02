@@ -49,10 +49,12 @@ const StudentQuizChart = () => {
     },
   };
 
-  return (
-    <div className="w-full overflow-auto max-w-full h-[400px] sm:h-[450px] md:h-[500px] lg:h-[600px] mx-auto p-4 bg-white rounded-xl shadow">
+return (
+    <div className="w-full p-4 bg-white rounded-xl shadow">
       <h4 className="text-center mb-4 font-semibold text-lg">My Quiz Results</h4>
-      <Bar data={data} options={options} />
+      <div className="relative h-[300px] sm:h-[400px] lg:h-[500px] w-[80%] mx-auto">
+        <Bar data={data} options={options} />
+      </div>
     </div>
   );
 };

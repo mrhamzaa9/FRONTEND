@@ -56,7 +56,7 @@ const Chart= () => {
   return (
     <div className="space-y-10">
       {/* Students per school */}
-      <div style={{ width: "50%", height: 300, overflowX: "auto", overflowY: "hidden" }}>
+      <div style={{ width: "100%", height: 300, overflowX: "hidden", overflowY: "hidden" }}>
         <h4 style={{ textAlign: "center" }}>Students per School</h4>
         <Bar data={barData(studentsPerSchool, "schoolName", "count", "#f59e0b")} options={options} />
       </div>
@@ -64,13 +64,13 @@ const Chart= () => {
   
 
       {/* Courses per school */}
-      <div style={{ width: "100%", height: 300, overflowX: "auto", overflowY: "hidden" }}>
+      <div style={{ width: "100%", height: 300, overflowX: "hidden", overflowY: "hidden" }}>
         <h4 style={{ textAlign: "center" }}>Courses per School</h4>
         <Bar data={barData(coursesPerSchool, "name", "courseCount", "#3b82f6")} options={options} />
       </div>
 
       {/* Monthly Registrations */}
-      <div style={{ width: "100%", height: 300, overflowX: "auto",overflowY: "hidden" }}>
+      <div style={{ width: "100%", height: 300, overflowX: "hidden", overflowY: "hidden" }}>
         <h4 style={{ textAlign: "center" }}>Monthly Registrations</h4>
         <Bar
           data={{

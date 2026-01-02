@@ -18,16 +18,16 @@ export const fetchSchools = createAsyncThunk(
 );
 
 // 2️⃣ Fetch approved schools (teacher side)
-export const fetchApprovedSchools = createAsyncThunk(
-  "teacherReq/fetchApprovedSchools",
-  async (_, { rejectWithValue }) => {
-    try {
-      return await api("/api/school/approved", "GET");
-    } catch (err) {
-      return rejectWithValue(err.message);
-    }
-  }
-);
+// export const fetchApprovedSchools = createAsyncThunk(
+//   "teacherReq/fetchApprovedSchools",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       return await api("api/school/approved", "GET");
+//     } catch (err) {
+//       return rejectWithValue(err.message);
+//     }
+//   }
+// );
 
 // 3️⃣ Request course
 export const requestCourse = createAsyncThunk(
@@ -92,19 +92,19 @@ const teacherReqSlice = createSlice({
     })
 
     /* ===== FETCH APPROVED ===== */
-    .addCase(fetchApprovedSchools.fulfilled, (state, action) => {
-      const map = {};
-      action.payload.schools.forEach((school) => {
-        if (!map[school.schoolId]) map[school.schoolId] = {};
-        school.courseIds.forEach((course) => {
-          map[school.schoolId][course._id] = "approved";
-        });
-      });
-      state.teacherCourses = map;
-    })
-    .addCase(fetchApprovedSchools.rejected, (state, action) => {
-      state.error = action.payload;
-    })
+    // .addCase(fetchApprovedSchools.fulfilled, (state, action) => {
+    //   const map = {};
+    //   action.payload.schools.forEach((school) => {
+    //     if (!map[school.schoolId]) map[school.schoolId] = {};
+    //     school.courseIds.forEach((course) => {
+    //       map[school.schoolId][course._id] = "approved";
+    //     });
+    //   });
+    //   state.teacherCourses = map;
+    // })
+    // .addCase(fetchApprovedSchools.rejected, (state, action) => {
+    //   state.error = action.payload;
+    // })
 
     /* ===== REQUEST COURSE ===== */
     .addCase(requestCourse.fulfilled, (state, action) => {
