@@ -5,7 +5,7 @@ import { api } from "../../service/api";
 // Fetch quiz by ID (teacher-generated) or generate new (optional AI)
 export const fetchQuiz = createAsyncThunk(
   "quiz/fetch",
-  async ({ quizId, topic, difficulty }, { rejectWithValue }) => {
+  async ({ quizId, topic, difficulty,courseId }, { rejectWithValue }) => {
     try {
       let res;
 
@@ -14,7 +14,7 @@ export const fetchQuiz = createAsyncThunk(
         res = await api(`/api/quiz/student/${quizId}`, "GET");
       } else {
     
-   res = await api(`/api/quiz/student/`, "POST",{ topic, difficulty });
+   res = await api(`/api/quiz/student/`, "POST",{ topic, difficulty, courseId });
       }
 
       return res; // { success, quizId, questions }

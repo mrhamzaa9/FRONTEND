@@ -17,17 +17,17 @@ export const fetchSchools = createAsyncThunk(
   }
 );
 
-// 2️⃣ Fetch approved schools (teacher side)
-// export const fetchApprovedSchools = createAsyncThunk(
-//   "teacherReq/fetchApprovedSchools",
-//   async (_, { rejectWithValue }) => {
-//     try {
-//       return await api("api/school/approved", "GET");
-//     } catch (err) {
-//       return rejectWithValue(err.message);
-//     }
-//   }
-// );
+// 2️⃣ Fetch approved teacher courses
+export const fetchApprovedTeacherCourses = createAsyncThunk(
+  "teacherReq/fetchApprovedTeacherCourses",
+  async (_, { rejectWithValue }) => {
+    try {
+      return await api("/api/school/teacher-approve", "GET");
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
 
 // 3️⃣ Request course
 export const requestCourse = createAsyncThunk(
@@ -47,7 +47,7 @@ export const requestCourse = createAsyncThunk(
 // 4️⃣ Cancel request
 export const cancelCourse = createAsyncThunk(
   "teacherReq/cancelCourse",
-  async ({ schoolId }, { rejectWithValue }) => {
+  async ({ schoolId, courseId }, { rejectWithValue }) => {
     try {
       return await api("/api/school/teacher/cancel", "POST", { schoolId });
     } catch (err) {
@@ -63,8 +63,8 @@ export const cancelCourse = createAsyncThunk(
 const teacherReqSlice = createSlice({
   name: "teacherReq",
   initialState: {
-    schools: [],
-    teacherCourses: {}, // ⭐ normalized state
+    schools: [],          // all schools
+    teacherCourses: {},   // { schoolId: { courseId: status } }
     loading: false,
     error: null,
   },
@@ -75,62 +75,72 @@ const teacherReqSlice = createSlice({
     },
   },
 
- extraReducers: (builder) => {
-  builder
-    /* ===== FETCH SCHOOLS ===== */
-    .addCase(fetchSchools.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    })
-    .addCase(fetchSchools.fulfilled, (state, action) => {
-      state.loading = false;
-      state.schools = action.payload;
-    })
-    .addCase(fetchSchools.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    })
+  extraReducers: (builder) => {
+    builder
+      // FETCH SCHOOLS
+      .addCase(fetchSchools.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchSchools.fulfilled, (state, action) => {
+        state.loading = false;
+        state.schools = action.payload;
+      })
+      .addCase(fetchSchools.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
 
-    /* ===== FETCH APPROVED ===== */
-    // .addCase(fetchApprovedSchools.fulfilled, (state, action) => {
-    //   const map = {};
-    //   action.payload.schools.forEach((school) => {
-    //     if (!map[school.schoolId]) map[school.schoolId] = {};
-    //     school.courseIds.forEach((course) => {
-    //       map[school.schoolId][course._id] = "approved";
-    //     });
-    //   });
-    //   state.teacherCourses = map;
-    // })
-    // .addCase(fetchApprovedSchools.rejected, (state, action) => {
-    //   state.error = action.payload;
-    // })
+      // FETCH APPROVED TEACHER COURSES
+      .addCase(fetchApprovedTeacherCourses.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchApprovedTeacherCourses.fulfilled, (state, action) => {
+        state.loading = false;
+        const map = {};
+        if (action.payload.approved) {
+          action.payload.schools.forEach((school) => {
+            const schoolId = school.schoolId;
+            map[schoolId] = {};
+            school.courseIds.forEach((course) => {
+              map[schoolId][course._id] = "approved";
+            });
+          });
+        }
+        state.teacherCourses = map;
+      })
+      .addCase(fetchApprovedTeacherCourses.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
 
-    /* ===== REQUEST COURSE ===== */
-    .addCase(requestCourse.fulfilled, (state, action) => {
-      const { schoolId, courseId } = action.meta.arg;
-      if (!state.teacherCourses[schoolId]) state.teacherCourses[schoolId] = {};
-      state.teacherCourses[schoolId][courseId] = "pending";
-    })
-    .addCase(requestCourse.rejected, (state, action) => {
-      state.error = action.payload;
-    })
+      // REQUEST COURSE
+      .addCase(requestCourse.fulfilled, (state, action) => {
+        const { schoolId, courseId } = action.meta.arg;
+        if (!state.teacherCourses[schoolId]) state.teacherCourses[schoolId] = {};
+        state.teacherCourses[schoolId][courseId] = "pending";
+      })
+      .addCase(requestCourse.rejected, (state, action) => {
+        state.error = action.payload;
+      })
 
-    /* ===== CANCEL COURSE ===== */
-    .addCase(cancelCourse.fulfilled, (state, action) => {
-      const { schoolId } = action.meta.arg;
-      if (state.teacherCourses[schoolId]) {
-        Object.keys(state.teacherCourses[schoolId]).forEach((courseId) => {
-          if (state.teacherCourses[schoolId][courseId] === "pending") {
-            delete state.teacherCourses[schoolId][courseId];
-          }
-        });
-      }
-    })
-    .addCase(cancelCourse.rejected, (state, action) => {
-      state.error = action.payload;
-    });
-}
+      // CANCEL COURSE
+      .addCase(cancelCourse.fulfilled, (state, action) => {
+        const { schoolId } = action.meta.arg;
+        if (state.teacherCourses[schoolId]) {
+          Object.keys(state.teacherCourses[schoolId]).forEach((courseId) => {
+            if (state.teacherCourses[schoolId][courseId] === "pending") {
+              delete state.teacherCourses[schoolId][courseId];
+            }
+          });
+        }
+      })
+      .addCase(cancelCourse.rejected, (state, action) => {
+        state.error = action.payload;
+      });
+  },
 });
+
 export const { clearError } = teacherReqSlice.actions;
 export default teacherReqSlice.reducer;

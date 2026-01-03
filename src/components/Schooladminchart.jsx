@@ -25,41 +25,40 @@ function Schooladminchart() {
   const counts = monthlyRegistrations.map((m) => m.count);
 
 
-  // Standardized Chart Container Component to keep code clean
-  const ChartWrapper = ({ title, children }) => (
-    <div className="w-full bg-white p-4 rounded-xl shadow">
-      <h4 className="text-center mb-4 font-semibold text-gray-700">{title}</h4>
-      <div className="relative h-[250px] sm:h-[350px] w-full">
-        {children}
+  // ... (logic remains same)
+  return (
+    <div className="w-full p-4 space-y-6">
+      <h2 className="text-2xl font-bold text-gray-800">School Dashboard</h2>
+      
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="p-4 bg-blue-50 rounded-lg">Students: <b>{studentsCount}</b></div>
+        <div className="p-4 bg-green-50 rounded-lg">Teachers: <b>{teachersCount}</b></div>
+        <div className="p-4 bg-purple-50 rounded-lg">Courses: <b>{coursesCount}</b></div>
+        <div className="p-4 bg-orange-50 rounded-lg text-sm">Submitted: <b>{submittedCount}</b></div>
+        <div className="p-4 bg-red-50 rounded-lg text-sm">Pending: <b>{pendingCount}</b></div>
+      </div>
+
+      <div className="bg-white p-4 rounded-xl shadow">
+        <h3 className="text-center mb-4 font-semibold">Monthly Registrations</h3>
+        <div className="relative h-[300px] sm:h-[400px] w-[80%] mx-auto">
+          <Line
+            options={{ responsive: true, maintainAspectRatio: false }}
+            data={{
+              labels: months,
+              datasets: [{
+                  label: "New Students",
+                  data: counts,
+                  borderColor: "rgb(53, 162, 235)",
+                  backgroundColor: "rgba(53, 162, 235, 0.5)",
+                  fill: true
+              }],
+            }}
+          />
+        </div>
       </div>
     </div>
   );
-
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-4">
-      <ChartWrapper title="Students per School">
-        <Bar data={barData(studentsPerSchool, "schoolName", "count", "#f59e0b")} options={options} />
-      </ChartWrapper>
-
-      <ChartWrapper title="Courses per School">
-        <Bar data={barData(coursesPerSchool, "name", "courseCount", "#3b82f6")} options={options} />
-      </ChartWrapper>
-
-      <ChartWrapper title="Monthly Registrations">
-        <Bar
-          data={{
-            labels: monthlyRegistrations.map((m) => `${m.month}/${m.year}`),
-            datasets: [{ label: "Students", data: monthlyRegistrations.map((m) => m.count), backgroundColor: "#f43f5e" }],
-          }}
-          options={options}
-        />
-      </ChartWrapper>
-
-      <ChartWrapper title="Average Quiz Score">
-        <Doughnut data={doughnutData} options={{ responsive: true, maintainAspectRatio: false }} />
-      </ChartWrapper>
-    </div>
-  );
-};
+}
 
 export default Schooladminchart;

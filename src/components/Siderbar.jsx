@@ -42,9 +42,7 @@ export default function Sidebar({ children }) {
     ],
     schooladmin: [
       { name: "Dashboard", path: "/schooladmin" },
-      { name: "Teachers", path: "/schooladmin/teachers" },
-      { name: "Create School", path: "/create-school" },
-      { name: "Courses", path: "/schooladmin/courses" },
+      { name: "Teachers", path: "/schooladmin/teachers" }, { name: "Courses", path: "/schooladmin/courses" },
     ],
     teacher: [
       { name: "My Courses", path: "/teacher" },

@@ -6,11 +6,12 @@ import Notifycenter from "../../components/Notifycenter";
 
 import {
   fetchSchools,
-//  fetchApprovedSchools,
+  fetchApprovedTeacherCourses,
   requestCourse,
   cancelCourse,
   clearError,
 } from "../../redux/slice/teacherReqSlice";
+
 import Teacherchart from "../../components/Teacherchart";
 
 export default function TeacherDashboard() {
@@ -25,8 +26,8 @@ export default function TeacherDashboard() {
   ====================== */
   useEffect(() => {
     dispatch(fetchSchools());
-    // dispatch(fetchApprovedSchools());
-  }, []);
+    dispatch(fetchApprovedTeacherCourses());
+  }, [dispatch]);
 
   /* ======================
      ERROR HANDLING
@@ -43,23 +44,18 @@ export default function TeacherDashboard() {
   return (
     <div className="p-6">
       <Notifycenter />
+      <h2 className="text-2xl text-amber-600 font-bold mb-5">Teacher Dashboard</h2>
 
-      <h2 className="text-2xl  text-amber-600 font-bold mb-5">Teacher Dashboard</h2>
- 
       {schools.length === 0 && <p>No schools found.</p>}
 
       {schools.map((school) => (
-        <div
-          key={school._id}
-          className="border p-4 rounded mb-4 shadow-sm"
-        >
+        <div key={school._id} className="border p-4 rounded mb-4 shadow-sm">
           <h3 className="text-lg font-semibold mb-3">{school.name}</h3>
 
           {/* COURSES */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {school.courses?.map((course) => {
-              const status =
-                teacherCourses?.[school._id]?.[course._id];
+              const status = teacherCourses?.[school._id]?.[course._id];
 
               return (
                 <div
@@ -68,16 +64,10 @@ export default function TeacherDashboard() {
                 >
                   <span className="font-medium">{course.name}</span>
 
-                  {/* ===== BUTTON LOGIC ===== */}
                   {!status && (
                     <button
                       onClick={() =>
-                        dispatch(
-                          requestCourse({
-                            schoolId: school._id,
-                            courseId: course._id,
-                          })
-                        )
+                        dispatch(requestCourse({ schoolId: school._id, courseId: course._id }))
                       }
                       className="px-3 py-1 bg-amber-500 text-white rounded text-sm hover:bg-amber-600"
                     >
@@ -88,11 +78,7 @@ export default function TeacherDashboard() {
                   {status === "pending" && (
                     <button
                       onClick={() =>
-                        dispatch(
-                          cancelCourse({
-                            schoolId: school._id,
-                          })
-                        )
+                        dispatch(cancelCourse({ schoolId: school._id, courseId: course._id }))
                       }
                       className="px-3 py-1 bg-yellow-500 text-white rounded text-sm hover:bg-yellow-600"
                     >
@@ -101,23 +87,18 @@ export default function TeacherDashboard() {
                   )}
 
                   {status === "approved" && (
-                    <span className="text-green-600 font-semibold">
-                      Approved
-                    </span>
+                    <span className="text-green-600 font-semibold">Approved</span>
                   )}
                 </div>
               );
             })}
           </div>
-          
         </div>
-        
-              
       ))}
+
       <div className="mt-10">
-        <Teacherchart/>
-    </div>
+        <Teacherchart />
+      </div>
     </div>
   );
-
 }
