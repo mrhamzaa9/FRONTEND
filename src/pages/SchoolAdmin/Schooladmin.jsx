@@ -5,6 +5,7 @@ import Spinner from "../../components/Spinner";
 import { fetchMySchool, deleteCourse } from "../../redux/slice/schoolSlice";
 import SchooladminChart from "../../components/Schooladminchart";
 import Schooladminchart from "../../components/Schooladminchart";
+import NotifyCenter from "../../components/Notifycenter";
 
 export default function SchoolAdminDashboard() {
   const dispatch = useDispatch();
@@ -30,7 +31,9 @@ export default function SchoolAdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 p-6">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 to-orange-50 p-6">
+      
+          
       <h2 className="text-4xl font-bold mb-6 text-amber-700">School Admin Dashboard</h2>
 
       {loading === "loading" && <Spinner />}

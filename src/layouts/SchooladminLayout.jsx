@@ -6,6 +6,7 @@ import Sidebar from '../components/Siderbar';
 import CourseSchool from '../pages/SchoolAdmin/CourseSchool';
 import TeacherRequests from '../pages/SchoolAdmin/TeacherRequests';
 import Notification from '../components/Notification';
+import Topbar from '../components/Topbar';
 
 function SchooladminLayout() {
     const { user } = useAuth();
@@ -22,11 +23,14 @@ function SchooladminLayout() {
     return (
         <>
         <Notification/>
+            <Topbar/>
+            <div className=" mt-2">
             <Sidebar role={user?.role}>
             <Routes>
                 {routes}
             </Routes>
             </Sidebar>
+            </div>
         </>
     )
 }

@@ -1,9 +1,11 @@
-export const api = async (url, method = "GET", body, navigate, isFormData = false) => {
+export const api = async (url, method = "GET", body,  isFormData = false) => {
   const options = { method, credentials: "include", headers: {} };
 
   if (body) {
-    if (isFormData) options.body = body;
-    else {
+    if (isFormData) {
+      options.body = body;
+      // DO NOT set Content-Type manually for FormData
+    } else {
       options.headers["Content-Type"] = "application/json";
       options.body = JSON.stringify(body);
     }
@@ -17,10 +19,9 @@ export const api = async (url, method = "GET", body, navigate, isFormData = fals
       credentials: "include",
     });
     localStorage.removeItem("user");
-  window.location.href = "/login";
+    window.location.href = "/login";
     throw new Error("Session expired. Logged out.");
   }
- 
 
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || "Request failed");

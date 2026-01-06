@@ -81,7 +81,7 @@ export default function NotifyCenter() {
         {notifications.map((n) => (
           <MenuItem
             key={n._id}
-            sx={{ alignItems: "flex-start", opacity: n.read ? 0.6 : 1 }}
+            sx={{ alignItems: "flex-start", opacity: n.read ? 0.6 : 1 ,we}}
           >
             <Box>
               <Typography variant="subtitle2">

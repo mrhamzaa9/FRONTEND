@@ -7,6 +7,7 @@ import Notification from '../components/Notification';
 import Assigment from '../pages/Teacher/Assigment';
 import Submission from '../pages/Teacher/Submission';
 import Quiztech from '../pages/Teacher/Quiztech';
+import Topbar from '../components/Topbar';
 
 
 
@@ -27,6 +28,7 @@ function TeacherLayout() {
         <>
         
           <Notification/>
+          <Topbar/>
          <Sidebar role={user?.role}>
 
             <Routes>

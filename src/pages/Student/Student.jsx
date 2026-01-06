@@ -9,6 +9,7 @@ import {
   fetchStudentState,
 } from "../../redux/slice/student";
 import { fetchSchools } from "../../redux/slice/teacherReqSlice";
+import NotifyCenter from "../../components/Notifycenter";
 
 export default function Student() {
   const dispatch = useDispatch();
@@ -65,7 +66,8 @@ export default function Student() {
   if (schoolsLoading === "loading" || studentLoading === "loading") return <Spinner />;
 
   return (
-    <div className="p-6 bg-amber-50 min-h-screen">
+    <div className="p-6 flex flex-col bg-amber-50 min-h-screen">
+      
       <h2 className="text-3xl font-bold mb-6 text-amber-700">Student Dashboard</h2>
 
       {schools.map((school) => {

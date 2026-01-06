@@ -17,6 +17,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { Link, useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../redux/slice/authSlice";
+import NotifyCenter from "./Notifycenter";
 
 const drawerWidth = 260;
 
@@ -59,73 +60,74 @@ export default function Sidebar({ children }) {
 
   const links = menu[role] || [];
 
+  
   const drawer = (
-    <Box
+  <Box
+    sx={{
+      width: drawerWidth,
+      p: 2,
+      pt: "80px",          // 🔥 AppBar se neeche push
+      height: "100%",
+      display: "flex",
+      flexDirection: "column",
+      backgroundColor: "#FEF3C7",
+     
+         overflowX: "hidden",   // 🔥 text cut issue solved
+    }}
+  >
+    <Typography
+      variant="h6"
       sx={{
-        width: drawerWidth,
-        p: 2,
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        backgroundColor: "#FEF3C7",
-        overflowY: "hidden", // amber-100
+        mb: 2,
+        fontWeight: "bold",
+        color: "#78350F",
+        whiteSpace: "nowrap", 
+        // extra safety
       }}
     >
-      <Typography
-        variant="h5"
-        sx={{ mb: 3, fontWeight: "bold", color: "#78350F" }}
-      >
-        {role?.toUpperCase() || "USER"} PANEL
-      </Typography>
+      {role?.toUpperCase() || "USER"} 
+      <span > Panal</span>
+    </Typography>
 
-      <List sx={{ flexGrow: 1 }}>
-        {links.map((item) => {
-          const active = location.pathname === item.path;
+    <List sx={{ flexGrow: 1 }}>
+      {links.map((item) => {
+        const active = location.pathname === item.path;
 
-          return (
-            <ListItem key={item.path} disablePadding>
-              <ListItemButton
-                component={Link}
-                to={item.path}
-                sx={{
-                  mb: 1,
-                  borderRadius: 2,
-                  cursor: "pointer",
-                  backgroundColor: active ? "#FDE68A" : "transparent",
-                  color: "#78350F",
-                  "&:hover": {
-                    backgroundColor: "#FDE68A",
-                  },
-                }}
-              >
-                <ListItemText
-                  primary={item.name}
-                  primaryTypographyProps={{ fontWeight: 500 }}
-                />
-              </ListItemButton>
-            </ListItem>
-          );
-        })}
-      </List>
+        return (
+          <ListItem key={item.path} disablePadding>
+            <ListItemButton
+              component={Link}
+              to={item.path}
+              sx={{
+                mb: 1,
+                borderRadius: 2,
+                backgroundColor: active ? "#FDE68A" : "transparent",
+                color: "#78350F",
+                "&:hover": { backgroundColor: "#FDE68A" },
+              }}
+            >
+              <ListItemText primary={item.name} />
+            </ListItemButton>
+          </ListItem>
+        );
+      })}
+    </List>
 
-      <Button
-        onClick={handleLogout}
-        fullWidth
-        sx={{
-          mt: "auto",
-          backgroundColor: "#D97706",
-          color: "white",
-          fontWeight: "bold",
-          cursor: "pointer",
-          "&:hover": {
-            backgroundColor: "#B45309",
-          },
-        }}
-      >
-        Logout
-      </Button>
-    </Box>
-  );
+    <Button
+      onClick={handleLogout}
+      fullWidth
+      sx={{
+        mt: "auto",
+        backgroundColor: "#D97706",
+        color: "white",
+        fontWeight: "bold",
+        "&:hover": { backgroundColor: "#B45309" },
+      }}
+    >
+      Logout
+    </Button>
+  </Box>
+);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -134,21 +136,57 @@ export default function Sidebar({ children }) {
           position="fixed"
           sx={{
             zIndex: 1201,
-            backgroundColor: "#B45309", // amber-700
+            backgroundColor: "#B45309",
+        
           }}
         >
-          <Toolbar>
-            <IconButton
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ mr: 2, color: "white", cursor: "pointer" }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" fontWeight="bold">
-              Multi-School LMS
-            </Typography>
-          </Toolbar>
+   <Toolbar
+  sx={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    px: 2,              // horizontal padding
+    minHeight: 64,    
+    overflow: "hidden",  // consistent AppBar height
+  }}
+>
+  {/* LEFT SIDE */}
+  <Box
+    sx={{
+      display: "flex",
+      alignItems: "center",
+      gap: 1
+    }}
+  >
+    <IconButton
+      edge="start"
+      onClick={handleDrawerToggle}
+      sx={{
+        color: "white",
+        display: { xs: "block", lg: "none" }
+      }}
+    >
+      <MenuIcon />
+    </IconButton>
+
+    <Typography variant="h6" fontWeight="bold">
+      Multi-School LMS
+    </Typography>
+  </Box>
+
+  {/* RIGHT SIDE */}
+  <Box
+    sx={{
+      display: "flex",
+      alignItems: "center",
+      gap: 1        // 🔥 spacing for NotifyCenter / future avatar
+    }}
+  >
+    <NotifyCenter />
+  </Box>
+</Toolbar>
+
+
         </AppBar>
       )}
 
@@ -172,6 +210,7 @@ export default function Sidebar({ children }) {
           "& .MuiDrawer-paper": {
             width: drawerWidth,
             boxSizing: "border-box",
+               overflowX: "hidden",  
           },
         }}
       >

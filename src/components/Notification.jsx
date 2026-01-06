@@ -9,39 +9,18 @@ export default function Notification() {
 
   useEffect(() => {
     if (!user?._id || initialized.current) return;
-
     initialized.current = true;
-    console.log("Frontend user._id:", user._id);
-    // connect socket
+
+    console.log("🔌 Connecting socket for user:", user._id);
     socket.connect();
 
-    // join user room once connected
     socket.on("connect", () => {
-      console.log("SOCKET CONNECTED", socket.id);
+      console.log("✅ SOCKET CONNECTED:", socket.id);
       socket.emit("join", user._id);
     });
 
-    socket.onAny((event, ...args) => {
-      console.log("EVENT RECEIVED:", event, args);
-    });
-
-
-    // listener for notifications
-    const notificationHandler = (data) => {
-      console.log("🔥 NOTIFICATION RECEIVED:", data);
-      Swal.fire({
-        icon: data.status === "approved" ? "success" : "error",
-        title: data.status.toUpperCase(),
-        html: `
-          <b>School:</b> ${data.schoolName}<br/>
-          <b>Message:</b> ${data.message}
-        `,
-      });
-    };
-
-     const handleTeacherRequestStatus = (data) => {
-      console.log(" NOTIFICATION RECEIVED:", data);
-
+    // 👨‍🏫 TEACHER → request approved/rejected
+    const handleTeacherRequestStatus = (data) => {
       Swal.fire({
         icon: data.status === "approved" ? "success" : "error",
         title: data.status.toUpperCase(),
@@ -54,14 +33,53 @@ export default function Notification() {
       });
     };
 
-    socket.on("teacher-request-status", handleTeacherRequestStatus);
-
-    // cleanup on unmount
-    return () => {
-      socket.off("teacher-request-status", notificationHandler);
-      
+    // 👨‍💼 ADMIN → new teacher request
+    const handleNewTeacherRequest = (data) => {
+      Swal.fire({
+        icon: "info",
+        title: "New Teacher Request",
+        html: `
+          <b>School:</b> ${data.schoolName}<br/>
+          <b>Message:</b> ${data.message}
+        `,
+      });
     };
-  }, [user?._id]); // ✅ dependency array ensures effect runs once per user
+
+    // 📘 STUDENT → new assignment
+    const handleNewAssignment = (data) => {
+      Swal.fire({
+        icon: "info",
+        title: "New Assignment",
+        html: `
+          <b>Course:</b> ${data.courseName}<br/>
+          ${data.message}
+        `,
+      });
+    };
+
+    // 📝 TEACHER → assignment submitted
+    const handleAssignmentSubmitted = (data) => {
+      Swal.fire({
+        icon: "info",
+        title: "Assignment Submitted",
+        html: data.message,
+      });
+    };
+
+    // ✅ REGISTER ALL LISTENERS ONCE
+    socket.on("teacher-request-status", handleTeacherRequestStatus);
+    socket.on("teacher-request", handleNewTeacherRequest);
+    socket.on("new-assignment", handleNewAssignment);
+    socket.on("assignment-submitted", handleAssignmentSubmitted);
+
+    // 🧹 CLEANUP
+    return () => {
+      socket.off("teacher-request-status", handleTeacherRequestStatus);
+      socket.off("teacher-request", handleNewTeacherRequest);
+      socket.off("new-assignment", handleNewAssignment);
+      socket.off("assignment-submitted", handleAssignmentSubmitted);
+    };
+  }, [user?._id]);
 
   return null;
 }

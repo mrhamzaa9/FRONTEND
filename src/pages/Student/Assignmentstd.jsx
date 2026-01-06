@@ -69,7 +69,8 @@ export default function Assignmentstd() {
                       >
                         Upload File
                       </label>
-                      {a.selectedFile && <span className="ml-2">{a.selectedFile.name}</span>}
+
+                      {a.selectedFile && <span className="ml-2 ">{a.selectedFile.name}</span>}
                     </div>
 
                     <button
