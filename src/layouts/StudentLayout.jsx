@@ -7,6 +7,8 @@ import Assignmentstd from '../pages/Student/Assignmentstd';
 import { Quiz } from '../pages/Student/Quiz';
 import Notification from '../components/Notification';
 import Topbar from '../components/Topbar';
+import Paymentsuccess from '../components/Paymentsuccess';
+import Paymentcancel from '../components/Paymentcancel';
 
 
 function StudentLayout() {
@@ -16,6 +18,9 @@ function StudentLayout() {
         <Route path='/school' element={<Student/>} />
          <Route path='/quiz' element={<Quiz/>} />
         <Route path='/schoolassign' element={<Assignmentstd/>} />
+          {/* ✅ Stripe Routes */}
+          <Route path="/student/payment-success" element={<Paymentsuccess />} />
+          <Route path="/payment-cancel" element={<Paymentcancel />} />
         <Route path='*'
             element={
                 <Navigate to={"/school"} />

@@ -5,7 +5,7 @@ import Spinner from "../../components/Spinner";
 import { fetchMySchool, deleteCourse } from "../../redux/slice/schoolSlice";
 import SchooladminChart from "../../components/Schooladminchart";
 import Schooladminchart from "../../components/Schooladminchart";
-import NotifyCenter from "../../components/Notifycenter";
+
 
 export default function SchoolAdminDashboard() {
   const dispatch = useDispatch();

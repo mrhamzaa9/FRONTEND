@@ -14,16 +14,22 @@ export default function CreateCourse() {
 
   const onSubmit = async (data) => {
     try {
-      await dispatch(createCourse(data)).unwrap();
+      // Convert price to number or leave undefined for free courses
+      const payload = { 
+        ...data, 
+        price: data.price ? Number(data.price) : 0 
+      };
+
+      await dispatch(createCourse(payload)).unwrap();
 
       Swal.fire({
         title: "Success!",
-        text: "Course created successfully!",
+        text: payload.price > 0 ? "Paid course created successfully!" : "Free course created successfully!",
         icon: "success",
         confirmButtonColor: "#6B4226",
         color: "#D97706",
         background: "#FFFBEB",
-        iconColor: "#D97706", 
+        iconColor: "#D97706",
       });
 
       reset();
@@ -48,6 +54,7 @@ export default function CreateCourse() {
           Create Course
         </h2>
 
+        {/* Course Name */}
         <div className="mb-5">
           <label className="block mb-1 font-medium text-gray-700">Course Name</label>
           <input
@@ -58,6 +65,20 @@ export default function CreateCourse() {
           />
           {errors.name && (
             <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+          )}
+        </div>
+
+        {/* Price (optional) */}
+        <div className="mb-5">
+          <label className="block mb-1 font-medium text-gray-700">Price (Optional)</label>
+          <input
+            type="number"
+            {...register("price", { min: { value: 0, message: "Price cannot be negative" } })}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-400 transition"
+            placeholder="Leave empty for free course"
+          />
+          {errors.price && (
+            <p className="text-red-500 text-sm mt-1">{errors.price.message}</p>
           )}
         </div>
 
