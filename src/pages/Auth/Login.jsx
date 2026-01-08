@@ -1,13 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import EmailIcon from "@mui/icons-material/Email";
+import LockIcon from "@mui/icons-material/Lock";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import IconButton from "@mui/material/IconButton";
+
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../redux/slice/authSlice";
 
 export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const { loading } = useSelector((state) => state.auth);
 
@@ -53,65 +61,107 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-amber-50 to-orange-50 p-4">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md"
-      >
-        <h2 className="text-3xl font-bold mb-6 text-center text-amber-700">Login</h2>
+<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-100 via-orange-50 to-amber-200 px-4">
+  <div className="w-full max-w-md">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="bg-white/90 backdrop-blur-lg border border-white/30 p-8 sm:p-10 rounded-3xl shadow-2xl"
+    >
+      {/* Header */}
+      <div className="text-center mb-8">
+        <h2 className="text-4xl font-extrabold text-amber-700">
+          Welcome Back
+        </h2>
+        <p className="text-gray-500 mt-2">
+          Login to continue your learning journey
+        </p>
+      </div>
 
-        {/* Email */}
-        <div className="mb-4">
+      {/* Email */}
+      <div className="mb-5">
+        <label className="block text-sm font-medium text-gray-600 mb-1">
+          Email Address
+        </label>
+        <div className="relative">
+          <EmailIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-amber-600" />
           <input
             type="email"
-            placeholder="Email"
+            placeholder="you@example.com"
             {...register("email", { required: "Email is required" })}
-            className="w-full p-3 border border-gray-300 rounded-lg mb-1 focus:ring-2 focus:ring-amber-400 outline-none transition"
+            className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-400 outline-none transition"
           />
-          {errors.email && (
-            <p className="text-red-600 text-sm">{errors.email.message}</p>
-          )}
         </div>
+        {errors.email && (
+          <p className="text-red-600 text-sm mt-1">
+            {errors.email.message}
+          </p>
+        )}
+      </div>
 
-        {/* Password */}
-        <div className="mb-6">
+      {/* Password */}
+      <div className="mb-6">
+        <label className="block text-sm font-medium text-gray-600 mb-1">
+          Password
+        </label>
+        <div className="relative">
+          <LockIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-amber-600" />
           <input
-            type="password"
-            placeholder="Password"
+            type={showPassword ? "text" : "password"}
+            placeholder="••••••••"
             {...register("password", { required: "Password is required" })}
-            className="w-full p-3 border border-gray-300 rounded-lg mb-1 focus:ring-2 focus:ring-amber-400 outline-none transition"
+            className="w-full pl-11 pr-12 py-3 rounded-xl border border-gray-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-400 outline-none transition"
           />
-          {errors.password && (
-            <p className="text-red-600 text-sm">{errors.password.message}</p>
-          )}
+          <IconButton
+            type="button"
+            onClick={() => setShowPassword((p) => !p)}
+            className="!absolute right-2 top-1/2 -translate-y-1/2 text-amber-600"
+          >
+            {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+          </IconButton>
         </div>
+        {errors.password && (
+          <p className="text-red-600 text-sm mt-1">
+            {errors.password.message}
+          </p>
+        )}
+      </div>
 
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={loading === "loading"}
-          className={`w-full p-3 rounded-xl font-semibold text-white shadow-lg transition ${loading === "loading"
-              ? "bg-amber-300 cursor-not-allowed"
-              : "bg-amber-600 hover:bg-amber-700 cursor-pointer"
-            }`}
-        >
-          {loading === "loading" ? "Logging in..." : "Login"}
-        </button>
+      {/* Submit */}
+      <button
+        type="submit"
+        disabled={loading === "loading"}
+        className={`w-full py-3 rounded-xl font-semibold text-white text-lg shadow-lg transition-all duration-300 ${
+          loading === "loading"
+            ? "bg-amber-300 cursor-not-allowed"
+            : "bg-amber-600 hover:bg-amber-700 hover:shadow-xl active:scale-[0.98]"
+        }`}
+      >
+        {loading === "loading" ? "Logging in..." : "Login"}
+      </button>
 
-        {/* Links */}
-        <p className="text-center mt-4 text-amber-700">
+      {/* Footer */}
+      <div className="text-center mt-6 space-y-2">
+        <p className="text-gray-600">
           Don’t have an account?{" "}
-          <Link to="/sign" className="font-medium hover:underline">
+          <Link
+            to="/sign"
+            className="text-amber-700 font-semibold hover:underline"
+          >
             Sign Up
           </Link>
         </p>
-        <p className="text-center mt-2 text-amber-700">
-          <Link to="/forgot-password" className="hover:underline">
-            Forgot Password?
-          </Link>
-        </p>
-      </form>
-    </div>
+
+        <Link
+          to="/forgot-password"
+          className="block text-sm text-amber-700 hover:underline"
+        >
+          Forgot Password?
+        </Link>
+      </div>
+    </form>
+  </div>
+</div>
+
 
   );
 }

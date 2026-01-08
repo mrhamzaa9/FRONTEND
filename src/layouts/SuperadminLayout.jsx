@@ -7,7 +7,7 @@ import ViewSchool from '../pages/SuperAdmin/ViewSchool'
 import DeleteSchool from '../pages/SuperAdmin/DeleteSchool'
 import ViewUser from '../pages/SuperAdmin/ViewUser'
 import DeleteUser from '../pages/SuperAdmin/DeleteUser'
-import Topbar from '../components/Topbar'
+
 
 const SuperadminLayout = () => {
     const { user } = useAuth();
@@ -26,7 +26,7 @@ const SuperadminLayout = () => {
     return (
         <>
           <Sidebar role={user?.role}>
-            <Topbar/>
+            
             <Routes>
                 {routes}
             </Routes>
