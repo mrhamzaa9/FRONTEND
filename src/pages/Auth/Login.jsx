@@ -55,7 +55,7 @@ export default function Login() {
       Swal.fire({
         icon: "error",
         title: "Login Failed",
-        text: result.payload || "Invalid credentials",
+        text: errors.message || "Invalid credentials",
       });
     }
   };

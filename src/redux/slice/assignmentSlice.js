@@ -10,7 +10,7 @@ export const createAssignment = createAsyncThunk(
   "assignments/create",
   async (data, { rejectWithValue }) => {
     try {
-      const res = await api("/api/assign/create", "POST", data);
+      const res = await api("/api/assign/create", "POST", data , true);
       return res.assignment; // backend should return the created assignment
     } catch (err) {
       return rejectWithValue(err.message || "Failed to create assignment");
@@ -43,7 +43,20 @@ export const deleteAssignment = createAsyncThunk(
     }
   }
 );
+//lecture upload
 
+export const createLecture = createAsyncThunk(
+  "lecture/create",
+  async (data, { rejectWithValue }) => {
+    try {
+      // Pass `true` as the 4th argument to tell api it's FormData
+      const res = await api("/api/assign/lecture", "POST", data, true);
+      return res.lecture; // backend returns the created lecture
+    } catch (err) {
+      return rejectWithValue(err.message || "Failed to create lecture");
+    }
+  }
+);
 
 /* ===========================
    SLICE
@@ -52,7 +65,8 @@ export const deleteAssignment = createAsyncThunk(
 const assignmentSlice = createSlice({
   name: "assignments",
   initialState: {
-    list: [],       // array of assignments
+    list: [],
+    lectureList: [], // array of lectures
     loading: false,
     error: null,
   },
@@ -103,6 +117,19 @@ const assignmentSlice = createSlice({
         state.list = state.list.filter(a => a._id !== action.payload);
       })
       .addCase(deleteAssignment.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Lecture upload
+      .addCase(createLecture.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createLecture.fulfilled, (state, action) => {
+        state.loading = false;
+        // Optionally add lecture to state if needed
+      })
+      .addCase(createLecture.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

@@ -34,22 +34,29 @@ export default function Layout({ children }) {
   const handleDrawerToggle = () => setMobileOpen((prev) => !prev);
   const handleLogout = () => dispatch(logoutUser());
 
-  const menu = {
+   const menu = {
     superadmin: [
       { name: "Dashboard", path: "/superadmin" },
       { name: "All Schools", path: "/superadmin/schools" },
+      { name: "Delete School", path: "/superadmin/delete-school" },
+      { name: "View Users", path: "/superadmin/users" },
+      { name: "Delete User", path: "/superadmin/delete-user" },
     ],
     schooladmin: [
       { name: "Dashboard", path: "/schooladmin" },
-      { name: "Teachers", path: "/schooladmin/teachers" },
+      { name: "Teachers", path: "/schooladmin/teachers" }, { name: "Courses", path: "/schooladmin/courses" },
     ],
     teacher: [
       { name: "My Courses", path: "/teacher" },
       { name: "Assignments", path: "/teacher/assignments" },
+      { name: "Submissions", path: "/teacher/submission" },
+      { name: "Quiz", path: "/teacher/quiz" },
+      { name: "Lectures", path: "/teacher/lecture" },
     ],
     student: [
       { name: "My School", path: "/school" },
       { name: "Assignments", path: "/schoolassign" },
+      { name: "Quiz", path: "/quiz" },
     ],
   };
 

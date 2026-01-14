@@ -3,7 +3,6 @@ import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import Spinner from "../../components/Spinner";
 import { fetchMySchool, deleteCourse } from "../../redux/slice/schoolSlice";
-import SchooladminChart from "../../components/Schooladminchart";
 import Schooladminchart from "../../components/Schooladminchart";
 
 

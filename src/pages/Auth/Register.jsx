@@ -70,7 +70,7 @@ export default function Register() {
         Swal.fire({
           icon: "error",
           title: "Registration Failed",
-          text: result.payload || "Something went wrong",
+          text: err.message || "Something went wrong",
           background: "#FFF7ED",
           color: "#7C2D12",
           confirmButtonColor: "#DC2626",

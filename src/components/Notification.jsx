@@ -65,18 +65,27 @@ export default function Notification() {
         html: data.message,
       });
     };
+   const handleTeacherRemoved = (data) => {
+  Swal.fire({
+    icon: "info",
+    title: "Removed from School",
+    text: data.message,
+  });
+};
 
     // ✅ REGISTER ALL LISTENERS ONCE
     socket.on("teacher-request-status", handleTeacherRequestStatus);
     socket.on("teacher-request", handleNewTeacherRequest);
     socket.on("new-assignment", handleNewAssignment);
     socket.on("assignment-submitted", handleAssignmentSubmitted);
+    socket.on("teacher-removed", handleTeacherRemoved);
 
     // 🧹 CLEANUP
     return () => {
       socket.off("teacher-request-status", handleTeacherRequestStatus);
       socket.off("teacher-request", handleNewTeacherRequest);
       socket.off("new-assignment", handleNewAssignment);
+      socket.off("teacher-removed", handleTeacherRemoved);
       socket.off("assignment-submitted", handleAssignmentSubmitted);
     };
   }, [user?._id]);
